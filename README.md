@@ -33,5 +33,5 @@ dotnet run --project TaskSchedulerCLI
 ## Contributing
 Contributions to the Task Scheduler Solution are welcome! If you find any issues or have suggestions for improvements, please create a new issue or submit a pull request.
 
-License
+## License
 This project is licensed under the MIT License.
