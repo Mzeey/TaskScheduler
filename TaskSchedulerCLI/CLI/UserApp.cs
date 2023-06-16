@@ -12,6 +12,7 @@ namespace TaskSchedulerCLI.CLI
     internal class UserApp : IUserApp
     {
         private readonly IUserService _userService;
+        private string _authorizationToken;
         public UserApp(IUserService userService)
         {
             _userService = userService;
@@ -56,7 +57,7 @@ namespace TaskSchedulerCLI.CLI
             return isCreated;
         }
 
-        public void DeleteAccount()
+        public async Task<bool> DeleteAccount()
         {
             throw new NotImplementedException();
         }
@@ -81,6 +82,7 @@ namespace TaskSchedulerCLI.CLI
             {
                 string authToken = await _userService.LoginAsync(username, password);
                 isLoggedin = (authToken != null)? true : false;
+                _authorizationToken = authToken;
             }
             catch(Exception ex)
             {
@@ -91,9 +93,10 @@ namespace TaskSchedulerCLI.CLI
             return isLoggedin;
         }
 
-        public void Logout()
+        public async Task<bool> Logout()
         {
-            throw new NotImplementedException();
+            bool isLoggedOut = await _userService.LogoutAsync(_authorizationToken);
+            return isLoggedOut;
         }
 
         public void ViewProfileDetails()

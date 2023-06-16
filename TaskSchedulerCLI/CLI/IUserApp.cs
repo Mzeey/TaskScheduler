@@ -12,8 +12,8 @@ namespace TaskSchedulerCLI.CLI
         Task<bool> Login();
         void EditProfile();
         void ChangePassword();
-        void DeleteAccount();
+        Task<bool> DeleteAccount();
         void ViewProfileDetails();
-        void Logout();
+        Task<bool> Logout();
     }
 }

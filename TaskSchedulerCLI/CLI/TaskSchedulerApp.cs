@@ -122,8 +122,8 @@ namespace TaskSchedulerCLI.CLI
                      _userApp.ViewProfileDetails();
                     break;
                 case "10":
-                     _userApp.Logout();
-                    loggedIn = false;
+                     bool isLoggedout = await _userApp.Logout();
+                    loggedIn = (isLoggedout) ? false : true;
                     break;
                 case "11":
                     _isExitRequested = true;

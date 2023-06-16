@@ -161,7 +161,7 @@ namespace Mzeey.UserManagementLib.Services
                 return await _userRepository.UpdateAsync(userId, user);
             }
 
-            return null; // User not found
+            return null;
         }
 
     }
