@@ -46,14 +46,14 @@ namespace Mzeey.UserManagementLib.Repositories
 
         public async Task<bool> DeleteAsync(string userId)
         {
-            var user = await _db.Users.FindAsync(userId);
+            var user = _userCache.Values.FirstOrDefault(u => u.Id.ToUpper() == userId.ToUpper());
             if (user == null)
                 return false;
 
             _db.Users.Remove(user);
             int affected = await _db.SaveChangesAsync();
 
-            return (affected == 1) ? _userCache.TryRemove(userId, out _) : false;
+            return (affected > 1) ? _userCache.TryRemove(userId, out user) : false;
         }
 
         public Task<User> RetrieveAsync(string userId)
@@ -61,8 +61,7 @@ namespace Mzeey.UserManagementLib.Repositories
             return Task.Run<User>(() =>
             {
                 userId = userId.ToUpper();
-                User user;
-                _userCache.TryGetValue(userId, out user);
+                User user = _userCache.Values.FirstOrDefault(u => u.Id.ToUpper() == userId.ToUpper());
                 return user;
             });
         }

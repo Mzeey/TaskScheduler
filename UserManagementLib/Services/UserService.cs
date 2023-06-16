@@ -81,7 +81,7 @@ namespace Mzeey.UserManagementLib.Services
 
         public async Task<User> GetUserAsync(string userId)
         {
-            return await _userRepository.RetrieveAsync(userId);
+            return await _userRepository.RetrieveAsync(userId.ToUpper());
         }
 
         public async Task<User> GetUserByUsernameAsync(string username)
@@ -164,5 +164,23 @@ namespace Mzeey.UserManagementLib.Services
             return null;
         }
 
+        public async Task<User> ChangeUserPassword(string userId, string oldpassword, string newPassword)
+        {
+            User user = await _userRepository.RetrieveAsync(userId);
+            if(user == null)
+            {
+                throw new Exception("Current User does not Exist");
+            }
+
+            oldpassword = PasswordHasher.HashPassword(oldpassword, user.Salt);
+            if(user.Password != oldpassword)
+            {
+                throw new Exception("Invalid current Password");
+            }
+            newPassword = PasswordHasher.HashPassword(newPassword, user.Salt);
+
+            user.Password = newPassword;
+            return await _userRepository.UpdateAsync(userId, user);
+        }
     }
 }

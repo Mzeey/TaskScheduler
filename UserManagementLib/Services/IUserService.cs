@@ -16,6 +16,7 @@ namespace Mzeey.UserManagementLib.Services
         Task<User> GetUserAsync(string userId);
         Task<User> GetUserByUsernameAsync(string username);
         Task<User> ChangeUserRoleAsync(string userId, UserRole newRole);
+        Task<User> ChangeUserPassword(string userId, string oldpassword, string newPassword);
         Task<IEnumerable<User>> GetAllUsersAsync();
         Task<string> LoginAsync(string username, string password);
         Task<bool> LogoutAsync(string token);

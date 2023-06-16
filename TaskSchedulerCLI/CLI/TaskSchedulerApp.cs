@@ -109,17 +109,21 @@ namespace TaskSchedulerCLI.CLI
                     await _taskApp.ViewMyTasks();
                     break;
                 case "6":
-                     _userApp.EditProfile();
+                     await _userApp.EditProfile();
                     break;
                 case "7":
-                     _userApp.ChangePassword();
+                     await _userApp.ChangePassword();
                     break;
                 case "8":
-                     _userApp.DeleteAccount();
-                    loggedIn = false;
+                    bool isDeleted = await _userApp.DeleteAccount();
+                    if (isDeleted)
+                    {
+                        await _userApp.Logout();
+                        loggedIn = false;
+                    }
                     break;
                 case "9":
-                     _userApp.ViewProfileDetails();
+                     await _userApp.ViewProfileDetails();
                     break;
                 case "10":
                      bool isLoggedout = await _userApp.Logout();

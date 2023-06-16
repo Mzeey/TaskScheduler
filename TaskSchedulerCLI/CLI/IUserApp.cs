@@ -10,10 +10,10 @@ namespace TaskSchedulerCLI.CLI
     {
         Task<bool> CreateAccount();
         Task<bool> Login();
-        void EditProfile();
-        void ChangePassword();
+        Task EditProfile();
+        Task ChangePassword();
         Task<bool> DeleteAccount();
-        void ViewProfileDetails();
+        Task ViewProfileDetails();
         Task<bool> Logout();
     }
 }
