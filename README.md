@@ -16,7 +16,7 @@ git clone https://github.com/Mzeey/TaskScheduler.git
 ```
 2. Open the solution file (`TaskScheduler.sln`) in your preferred development environment (e.g., Visual Studio, Visual Studio Code).
 3. Build the solution to restore the dependencies.
-4. Update the connection string in the `appsettings.json` file of the `TaskSchedulerDb` project to point to your SQL Server database.
+4. Update the connection string in the `appsettings.json` file of the `DbContextLib` project to point to your SQL Server database.
 5. Run the database migrations to create the necessary tables:
 
 ```
