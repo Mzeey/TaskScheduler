@@ -7,7 +7,7 @@ The solution is organized into multiple projects within the solution file. Here'
 * `TaskSchedulerCLI`: The command-line interface (CLI) project that provides the user interface for interacting with the Task Scheduler system.
 * `TaskSchedulerLib`: The core library project that contains the business logic and services for managing tasks and user accounts.
 * `UserManagementLib`: A library project that handles user management functionality, including account creation, login, and profile management.
-* `TaskSchedulerDb`: A project that manages the database operations using Entity Framework Core. It includes the database context, migrations, and repository implementations.
+* `DbContextLib`: A project that manages the database operations using Entity Framework Core. It includes the database context, migrations, and repository implementations.
 ## Installation
 To install and run the Task Scheduler Solution, follow these steps:
 1. Clone the repository:
