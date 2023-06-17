@@ -12,7 +12,7 @@ The solution is organized into multiple projects within the solution file. Here'
 To install and run the Task Scheduler Solution, follow these steps:
 1. Clone the repository:
 ```
-git clone [https://github.com/your-username/task-scheduler-solution.git](https://github.com/Mzeey/TaskScheduler.git)
+git clone https://github.com/Mzeey/TaskScheduler.git
 ```
 2. Open the solution file (`TaskScheduler.sln`) in your preferred development environment (e.g., Visual Studio, Visual Studio Code).
 3. Build the solution to restore the dependencies.
@@ -20,7 +20,7 @@ git clone [https://github.com/your-username/task-scheduler-solution.git](https:/
 5. Run the database migrations to create the necessary tables:
 
 ```
-dotnet ef database update --project TaskSchedulerDb
+dotnet ef database update --project DbContextLib
 ```
 6. Set the `TaskSchedulerCLI` project as the startup project.
 7. Run the solution to start the Task Scheduler CLI:
