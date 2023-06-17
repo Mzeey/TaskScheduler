@@ -13,6 +13,7 @@ namespace Mzeey.Entities
         public int Id { get; set; }
         public string Title { get; set; }
 
-        public List<User> Users { get; set; }
+        public ICollection<User> Users { get; set; }
+        public ICollection<OrganisationUserRole> OrganisationUserRoles { get; set; }
     }
 }

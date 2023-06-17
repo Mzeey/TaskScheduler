@@ -15,8 +15,10 @@ namespace Mzeey.Entities
         public string Salt { get; set; }
         public int RoleId { get; set; }
         public Role Role { get; set; }
-        public List<TaskItem> Tasks { get; set; }
-        public List<AuthenticationToken> AuthenticationTokens {get;set;}
+        public ICollection<TaskItem> Tasks { get; set; }
+        public ICollection<AuthenticationToken> AuthenticationTokens {get;set;}
+        public ICollection<OrganisationUserRole> OrganisationUserRoles { get; set; } // Collection of user roles in organization spaces
     }
+}
 
 }
