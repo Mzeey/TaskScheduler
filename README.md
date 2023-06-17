@@ -12,7 +12,7 @@ The solution is organized into multiple projects within the solution file. Here'
 To install and run the Task Scheduler Solution, follow these steps:
 1. Clone the repository:
 ```
-git clone https://github.com/your-username/task-scheduler-solution.git
+git clone [https://github.com/your-username/task-scheduler-solution.git](https://github.com/Mzeey/TaskScheduler.git)
 ```
 2. Open the solution file (`TaskScheduler.sln`) in your preferred development environment (e.g., Visual Studio, Visual Studio Code).
 3. Build the solution to restore the dependencies.
