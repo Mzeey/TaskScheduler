@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Mzeey.DbContextLib;
 
@@ -11,9 +12,10 @@ using Mzeey.DbContextLib;
 namespace DbContextLib.Migrations
 {
     [DbContext(typeof(TaskSchedulerContext))]
-    partial class TaskSchedulerContextModelSnapshot : ModelSnapshot
+    [Migration("20230621230605_AddsNewEntities")]
+    partial class AddsNewEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -10,17 +10,14 @@ namespace Mzeey.Entities
 
         public string UserId { get; set; }
 
-        [ForeignKey("UserId")]
         public User User { get; set; }
 
         public string OrganisationSpaceId { get; set; }
 
-        [ForeignKey("OrganisationSpaceId")]
         public OrganisationSpace OrganisationSpace { get; set; }
 
         public int RoleId { get; set; }
 
-        [ForeignKey("RoleId")]
         public Role Role { get; set; }
     }
 }
