@@ -8,9 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Mzeey.SharedLib.Utilities;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Mzeey.SharedLib.Utilities;
 
-namespace Mzeey.TaskSchedulerLib.Repositories
+namespace Mzeey.Repositories
 {
     public class TaskRepository : ITaskRepository
     {

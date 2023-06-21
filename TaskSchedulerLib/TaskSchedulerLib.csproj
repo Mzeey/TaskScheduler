@@ -10,6 +10,7 @@
     <ProjectReference Include="..\DbContextLib\DbContextLib.csproj" />
     <ProjectReference Include="..\EntitiesLib\EntitiesLib.csproj" />
     <ProjectReference Include="..\SharedLib\SharedLib.csproj" />
+    <ProjectReference Include="..\UserRepository\RepositoriesLib.csproj" />
   </ItemGroup>
 
 </Project>

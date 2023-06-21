@@ -8,9 +8,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Mzeey.UserManagementLib.Repositories;
 
-namespace Mzeey.UserManagementLib.Repositories
+namespace Mzeey.Repositories
 {
     public class UserRepository : IUserRepository
     {
@@ -94,6 +93,6 @@ namespace Mzeey.UserManagementLib.Repositories
             return CacheUtility<string>.UpdateCache(_userCache, id, user);
         }
 
-        
+
     }
 }

@@ -3,7 +3,7 @@ using Moq;
 using System.Threading.Tasks;
 using Mzeey.Entities;
 using Mzeey.SharedLib.Enums;
-using Mzeey.UserManagementLib.Repositories;
+using Mzeey.Repositories;
 using Mzeey.UserManagementLib.Services;
 
 namespace UserManagement.Tests

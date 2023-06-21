@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mzeey.Entities;
-using Mzeey.TaskSchedulerLib.Repositories;
+using Mzeey.Repositories;
 using Mzeey.SharedLib.Enums;
 using Mzeey.SharedLib.Extensions;
 

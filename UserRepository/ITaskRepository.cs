@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Mzeey.Entities;
 
-namespace Mzeey.TaskSchedulerLib.Repositories
+namespace Mzeey.Repositories
 {
     public interface ITaskRepository
     {

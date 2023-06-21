@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Mzeey.Entities;
 
-namespace Mzeey.UserManagementLib.Repositories
+namespace Mzeey.Repositories
 {
     public interface IAuthenticationTokenRepository
     {

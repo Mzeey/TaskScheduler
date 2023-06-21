@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Mzeey.SharedLib.Utilities;
 
-namespace Mzeey.UserManagementLib.Repositories
+namespace Mzeey.Repositories
 {
     public class AuthenticationTokenRepository : IAuthenticationTokenRepository
     {

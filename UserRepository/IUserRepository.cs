@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mzeey.UserManagementLib.Repositories
+namespace Mzeey.Repositories
 {
     public interface IUserRepository
     {
