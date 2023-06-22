@@ -193,8 +193,8 @@ namespace TaskSchedulerCLI.CLI
                 Console.WriteLine($"First Name: {user.FirstName}");
                 Console.WriteLine($"Last Name: {user.LastName}");
                 Console.WriteLine($"Email: {user.Email}");
-                UserRole role = (UserRole) user.RoleId;
-                Console.WriteLine($"Role: {role.GetDescription()}");
+                //UserRole role = (UserRole) user.RoleId;
+                //Console.WriteLine($"Role: {role.GetDescription()}");
 
                 // Additional profile details can be displayed here
 

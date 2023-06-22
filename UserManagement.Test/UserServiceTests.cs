@@ -38,8 +38,7 @@ namespace UserManagement.Tests
                 FirstName = firstName,
                 LastName = lastName,
                 Username = username,
-                Email = email,
-                RoleId = (int) role
+                Email = email
             };
 
             _mockUserRepository.Setup(repo => repo.RetrieveByUserNameAsync(username))
@@ -58,7 +57,6 @@ namespace UserManagement.Tests
             Assert.Equal(lastName, result.LastName);
             Assert.Equal(username, result.Username);
             Assert.Equal(email, result.Email);
-            Assert.Equal((int)role, result.RoleId);
         }
 
         [Fact]

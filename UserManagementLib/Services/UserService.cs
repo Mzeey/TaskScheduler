@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Mzeey.Entities;
 using Mzeey.SharedLib.Enums;
 using Mzeey.SharedLib.Utilities;
-using Mzeey.UserManagementLib.Repositories;
+using Mzeey.Repositories;
 using Mzeey.UserManagementLib.Utilities;
 
 namespace Mzeey.UserManagementLib.Services
@@ -53,7 +53,6 @@ namespace Mzeey.UserManagementLib.Services
                 Password = hashedPassword,
                 Salt = salt,
                 Email = email,
-                RoleId = (int) userRole
             };
 
             return await _userRepository.CreateAsync(newUser);
@@ -152,16 +151,7 @@ namespace Mzeey.UserManagementLib.Services
 
         public async Task<User> ChangeUserRoleAsync(string userId, UserRole newRole)
         {
-            User user = await _userRepository.RetrieveAsync(userId);
-
-            if (user != null)
-            {
-                user.RoleId = (int) newRole;
-
-                return await _userRepository.UpdateAsync(userId, user);
-            }
-
-            return null;
+            throw new NotImplementedException();
         }
 
         public async Task<User> ChangeUserPassword(string userId, string oldpassword, string newPassword)

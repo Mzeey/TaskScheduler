@@ -71,19 +71,20 @@ namespace DbContextLib.Migrations
                     b.ToTable("OrganisationSpaces");
                 });
 
-            modelBuilder.Entity("Mzeey.Entities.OrganisationUserRole", b =>
+            modelBuilder.Entity("Mzeey.Entities.OrganisationUserSpace", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    b.Property<bool>("IsPrivate")
+                        .HasColumnType("bit");
 
                     b.Property<string>("OrganisationSpaceId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("RoleId")
+                    b.Property<int?>("RoleId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -212,10 +213,6 @@ namespace DbContextLib.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("int");
-
                     b.Property<string>("Salt")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -227,8 +224,6 @@ namespace DbContextLib.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("OrganisationSpaceId");
-
-                    b.HasIndex("RoleId");
 
                     b.ToTable("Users");
                 });
@@ -244,22 +239,22 @@ namespace DbContextLib.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Mzeey.Entities.OrganisationUserRole", b =>
+            modelBuilder.Entity("Mzeey.Entities.OrganisationUserSpace", b =>
                 {
                     b.HasOne("Mzeey.Entities.OrganisationSpace", "OrganisationSpace")
-                        .WithMany("OrganisationUserRoles")
+                        .WithMany("OrganisationUserSpaces")
                         .HasForeignKey("OrganisationSpaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Mzeey.Entities.Role", "Role")
-                        .WithMany("OrganisationUserRoles")
+                        .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Mzeey.Entities.User", "User")
-                        .WithMany("OrganisationUserRoles")
+                        .WithMany("OrganisationUserSpaces")
                         .HasForeignKey("UserId")
                         .IsRequired();
 
@@ -311,28 +306,13 @@ namespace DbContextLib.Migrations
                     b.HasOne("Mzeey.Entities.OrganisationSpace", null)
                         .WithMany("Users")
                         .HasForeignKey("OrganisationSpaceId");
-
-                    b.HasOne("Mzeey.Entities.Role", "Role")
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("Mzeey.Entities.OrganisationSpace", b =>
                 {
-                    b.Navigation("OrganisationUserRoles");
+                    b.Navigation("OrganisationUserSpaces");
 
                     b.Navigation("TaskItems");
-
-                    b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("Mzeey.Entities.Role", b =>
-                {
-                    b.Navigation("OrganisationUserRoles");
 
                     b.Navigation("Users");
                 });
@@ -346,7 +326,7 @@ namespace DbContextLib.Migrations
                 {
                     b.Navigation("AuthenticationTokens");
 
-                    b.Navigation("OrganisationUserRoles");
+                    b.Navigation("OrganisationUserSpaces");
 
                     b.Navigation("TaskItemComments");
 

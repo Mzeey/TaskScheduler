@@ -1,7 +1,6 @@
 ﻿
-using Mzeey.TaskSchedulerLib.Repositories;
 using Mzeey.TaskSchedulerLib.Services;
-using Mzeey.UserManagementLib.Repositories;
+using Mzeey.Repositories;
 using Mzeey.UserManagementLib.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

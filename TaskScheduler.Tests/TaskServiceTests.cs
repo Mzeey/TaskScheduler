@@ -3,7 +3,7 @@ using Moq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Mzeey.Entities;
-using Mzeey.TaskSchedulerLib.Repositories;
+using Mzeey.Repositories;
 using Mzeey.TaskSchedulerLib.Services;
 using Mzeey.SharedLib.Enums;
 using Mzeey.SharedLib.Extensions;
