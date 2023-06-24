@@ -11,12 +11,12 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Mzeey.Repositories
 {
-    public class TaskRepository : ITaskRepository
+    public class TaskItemRepository : ITaskItemRepository
     {
         private static ConcurrentDictionary<string, TaskItem> _taskCache;
         private TaskSchedulerContext _db;
 
-        public TaskRepository(TaskSchedulerContext db)
+        public TaskItemRepository(TaskSchedulerContext db)
         {
             _db = db;
             if(_taskCache is null)

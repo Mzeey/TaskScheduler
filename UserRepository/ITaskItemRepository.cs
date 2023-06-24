@@ -7,7 +7,7 @@ using Mzeey.Entities;
 
 namespace Mzeey.Repositories
 {
-    public interface ITaskRepository
+    public interface ITaskItemRepository
     {
         Task<TaskItem> CreateAsync(TaskItem task);
         Task<TaskItem> UpdateAsync(string id, TaskItem task); 

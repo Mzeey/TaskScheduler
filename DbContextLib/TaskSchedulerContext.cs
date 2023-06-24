@@ -12,8 +12,9 @@ namespace Mzeey.DbContextLib
         public DbSet<Role> Roles { get; set; }
         public DbSet<OrganisationSpace> OrganisationSpaces { get; set; }
         public DbSet<TaskItemComment> TaskItemComments { get; set; }
-        public DbSet<OrganisationUserSpace> OrganisationUserRoles { get; set; }
+        public DbSet<OrganisationUserSpace> OrganisationUserSpaces { get; set; }
         public DbSet<AuthenticationToken> AuthenticationTokens { get; set; }
+
 
         public TaskSchedulerContext() { }
 

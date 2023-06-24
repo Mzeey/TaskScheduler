@@ -32,7 +32,7 @@ namespace Mzeey.Repositories
             EntityEntry<User> added = await _db.Users.AddAsync(user);
             int affected = await _db.SaveChangesAsync();
 
-            return (affected == 1) ? _userCache.AddOrUpdate(user.Id, user, UpdateCache) : null;
+            return (affected == 1) ? _userCache.AddOrUpdate(user.Id, user, updateCache) : null;
         }
 
         public async Task<User> UpdateAsync(string userId, User user)
@@ -40,7 +40,7 @@ namespace Mzeey.Repositories
             _db.Users.Update(user);
             int affected = await _db.SaveChangesAsync();
 
-            return (affected == 1) ? UpdateCache(user.Id, user) : null;
+            return (affected == 1) ? updateCache(user.Id, user) : null;
         }
 
         public async Task<bool> DeleteAsync(string userId)
@@ -88,7 +88,7 @@ namespace Mzeey.Repositories
             return await Task.Run<IEnumerable<User>>(() => _userCache.Values);
         }
 
-        private User UpdateCache(string id, User user)
+        private User updateCache(string id, User user)
         {
             return CacheUtility<string>.UpdateCache(_userCache, id, user);
         }

@@ -28,7 +28,7 @@ class Program
         var dbContext = new TaskSchedulerContext(optionsBuilder.Options);
 
         IUserRepository userRepository = new UserRepository(dbContext);
-        ITaskRepository taskRepository = new TaskRepository(dbContext);
+        ITaskItemRepository taskRepository = new TaskItemRepository(dbContext);
         IAuthenticationTokenRepository authenticationTokenRepository = new AuthenticationTokenRepository(dbContext);
 
         IUserService userService = new UserService(userRepository, authenticationTokenRepository);

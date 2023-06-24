@@ -82,6 +82,14 @@ namespace Mzeey.Repositories
             });
         }
 
+        public Task<IEnumerable<AuthenticationToken>> RetrieveAllAsync()
+        {
+            return Task.Run<IEnumerable<AuthenticationToken>>(() =>
+            {
+                return _tokenCache.Values;
+            });
+        }
+
         private AuthenticationToken UpdateCache(int tokenId, AuthenticationToken token)
         {
             return CacheUtility<int>.UpdateCache(_tokenCache, tokenId, token);

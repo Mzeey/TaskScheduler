@@ -13,12 +13,12 @@ namespace TaskScheduler.Tests
 {
     public class TaskServiceTests
     {
-        private Mock<ITaskRepository> _mockTaskRepository;
+        private Mock<ITaskItemRepository> _mockTaskRepository;
         private TaskService _taskService;
 
         public TaskServiceTests()
         {
-            _mockTaskRepository = new Mock<ITaskRepository>();
+            _mockTaskRepository = new Mock<ITaskItemRepository>();
             _taskService = new TaskService(_mockTaskRepository.Object);
         }
 

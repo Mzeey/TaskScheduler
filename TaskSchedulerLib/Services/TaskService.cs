@@ -9,9 +9,9 @@ namespace Mzeey.TaskSchedulerLib.Services
 {
     public class TaskService : ITaskService
     {
-        private readonly ITaskRepository _taskRepository;
+        private readonly ITaskItemRepository _taskRepository;
 
-        public TaskService(ITaskRepository taskRepository)
+        public TaskService(ITaskItemRepository taskRepository)
         {
             _taskRepository = taskRepository;
         }

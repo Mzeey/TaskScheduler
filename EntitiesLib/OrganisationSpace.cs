@@ -15,6 +15,8 @@ namespace Mzeey.Entities
         [MaxLength(200)]
         public string Description { get; set; }
 
+        public bool IsPrivate { get; set; }
+
         public ICollection<User> Users { get; set; } 
 
         public ICollection<TaskItem> TaskItems { get; set; }
