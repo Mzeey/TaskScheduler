@@ -13,6 +13,8 @@ namespace Mzeey.Entities
         public string Password { get; set; }
         public string Email { get; set; }
         public string Salt { get; set; }
+        public bool IsEmailVerified { get; set; }
+        public DateTime? LastLoginDate { get; set; }
 
         public ICollection<AuthenticationToken> AuthenticationTokens {get;set;}
         public ICollection<TaskItem> Tasks { get; set; }
