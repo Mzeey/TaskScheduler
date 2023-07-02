@@ -14,5 +14,9 @@ namespace Mzeey.Entities
         public int Id { get; set; } 
         public string Title { get; set; }
         public string Description { get; set; }
+
+        public ICollection<NotificationTemplate> NotificationTemplates { get; set; }
+        public ICollection<NotificationSetting> NotificationSettings { get; set; }
+        public ICollection<Notification> Notifications { get; set; }
     }
 }

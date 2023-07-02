@@ -146,7 +146,7 @@ namespace Mzeey.UserManagementLib.Services
             _loggedInUserId = string.Empty;
 
             // Delete the authentication token
-            return await _tokenRepository.DeleteAsync(authToken.TokenId);
+            return await _tokenRepository.DeleteAsync(authToken.Id);
         }
 
         public async Task<User> ChangeUserRoleAsync(string userId, UserRole newRole)

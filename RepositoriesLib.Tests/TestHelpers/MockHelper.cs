@@ -221,7 +221,7 @@ public class MockHelper
                     return existingSpace;
                 }
 
-                existingSpace.Name = space.Name;
+                existingSpace.Title = space.Title;
                 existingSpace.Description = space.Description;
 
                 return existingSpace;
@@ -374,7 +374,7 @@ public class MockHelper
         authenticationTokenRepositoryMock.Setup(repo => repo.CreateAsync(It.IsAny<AuthenticationToken>()))
             .ReturnsAsync((AuthenticationToken token) =>
             {
-                token.TokenId = tokens.Count+1;
+                token.Id = tokens.Count+1;
                 token.Token = GenerateUniqueId(); // Assign a new unique ID
                 tokens.Add(token);
                 return token;
@@ -385,14 +385,14 @@ public class MockHelper
         authenticationTokenRepositoryMock.Setup(repo => repo.RetrieveAsync(It.IsAny<int>()))
             .ReturnsAsync((int tokenId) =>
             {
-                AuthenticationToken token = tokens.FirstOrDefault(t => t.TokenId == tokenId);
+                AuthenticationToken token = tokens.FirstOrDefault(t => t.Id == tokenId);
                 return token;
             });
 
         authenticationTokenRepositoryMock.Setup(repo => repo.DeleteAsync(It.IsAny<int>()))
             .ReturnsAsync((int tokenId) =>
             {
-                var existingToken = tokens.FirstOrDefault(t => t.TokenId == tokenId);
+                var existingToken = tokens.FirstOrDefault(t => t.Id == tokenId);
                 if (existingToken == null)
                 {
                     return false;
@@ -461,7 +461,7 @@ public class MockHelper
             var space = new OrganisationSpace
             {
                 Id = GenerateUniqueId(),
-                Name = "Organisation Space " + i,
+                Title = "Organisation Space " + i,
                 Description = "Description for Organisation Space " + i,
                 IsPrivate = new Random().Next(2) == 0
             };
@@ -518,7 +518,7 @@ public class MockHelper
         {
             var token = new AuthenticationToken
             {
-                TokenId = i + 1,
+                Id = i + 1,
                 Token = GenerateUniqueId(),
                 UserId = GenerateUniqueId(),
                 IssuedDate = DateTime.Now,

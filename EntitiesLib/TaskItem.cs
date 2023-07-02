@@ -21,5 +21,6 @@ namespace Mzeey.Entities
         public User User { get; set; }
         public OrganisationSpace OrganisationSpace { get; set; }
         public ICollection<TaskItemComment> TaskItemComments { get; set; } // Collection of comments associated with the task
+        public ICollection<TaskAssignment> TaskAssignments { get; set; } // Collection of comments associated with the task
     }
 }

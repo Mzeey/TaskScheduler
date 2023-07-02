@@ -34,7 +34,7 @@ namespace RepositoriesLib.Tests.Repositories
 
             // Assert
             Assert.NotNull(createdToken);
-            Assert.NotEqual(0, createdToken.TokenId);
+            Assert.NotEqual(0, createdToken.Id);
             Assert.Equal(newToken.UserId, createdToken.UserId);
             Assert.Equal(newToken.Token, createdToken.Token);
             Assert.Equal(newToken.ExpirationDate, createdToken.ExpirationDate);
@@ -51,11 +51,11 @@ namespace RepositoriesLib.Tests.Repositories
             Assert.NotNull(existingToken); // Ensure there's at least one token in the repository
 
             // Act
-            var retrievedToken = await authenticationTokenRepository.RetrieveAsync(existingToken.TokenId);
+            var retrievedToken = await authenticationTokenRepository.RetrieveAsync(existingToken.Id);
 
             // Assert
             Assert.NotNull(retrievedToken);
-            Assert.Equal(existingToken.TokenId, retrievedToken.TokenId);
+            Assert.Equal(existingToken.Id, retrievedToken.Id);
             Assert.Equal(existingToken.UserId, retrievedToken.UserId);
             Assert.Equal(existingToken.Token, retrievedToken.Token);
             Assert.Equal(existingToken.ExpirationDate, retrievedToken.ExpirationDate);
@@ -72,7 +72,7 @@ namespace RepositoriesLib.Tests.Repositories
             Assert.NotNull(existingToken); // Ensure there's at least one token in the repository
 
             // Act
-            var isDeleted = await authenticationTokenRepository.DeleteAsync(existingToken.TokenId);
+            var isDeleted = await authenticationTokenRepository.DeleteAsync(existingToken.Id);
 
             // Assert
             Assert.True(isDeleted);

@@ -20,5 +20,12 @@ namespace Mzeey.Entities
         public ICollection<TaskItem> Tasks { get; set; }
         public ICollection<TaskItemComment> TaskItemComments { get; set; }
         public ICollection<OrganisationUserSpace> OrganisationUserSpaces { get; set; }
+        public ICollection<TaskAssignment> AssignedTaskAssignments { get; set; }
+        public ICollection<TaskAssignment> ReceivedTaskAssignments { get; set; }
+        public ICollection<PasswordResetToken> PasswordResetTokens { get; set; }
+        public ICollection<OrganisationSpaceInvitation> SentOrganisationSpaceInvitations { get; set; }
+        public ICollection<OrganisationSpaceInvitation> ReceivedOrganisationSpaceInvitations { get; set; }
+        public ICollection<NotificationSetting> NotificationSettings { get; set; }
+        public ICollection<Notification> Notifications { get; set; }
     }
 }

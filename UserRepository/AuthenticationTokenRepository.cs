@@ -21,7 +21,7 @@ namespace Mzeey.Repositories
             if (_tokenCache is null)
             {
                 _tokenCache = new ConcurrentDictionary<int, AuthenticationToken>(
-                    _db.AuthenticationTokens.ToDictionary(t => t.TokenId)
+                    _db.AuthenticationTokens.ToDictionary(t => t.Id)
                 );
             }
         }
@@ -31,7 +31,7 @@ namespace Mzeey.Repositories
             EntityEntry<AuthenticationToken> added = await _db.AuthenticationTokens.AddAsync(token);
             int affected = await _db.SaveChangesAsync();
 
-            return (affected == 1) ? _tokenCache.AddOrUpdate(token.TokenId, token, UpdateCache) : null;
+            return (affected == 1) ? _tokenCache.AddOrUpdate(token.Id, token, UpdateCache) : null;
         }
 
         public async Task<AuthenticationToken> UpdateAsync(AuthenticationToken token)
@@ -39,7 +39,7 @@ namespace Mzeey.Repositories
             _db.AuthenticationTokens.Update(token);
             int affected = await _db.SaveChangesAsync();
 
-            return (affected == 1) ? UpdateCache(token.TokenId, token) : null;
+            return (affected == 1) ? UpdateCache(token.Id, token) : null;
         }
 
         public async Task<bool> DeleteAsync(int tokenId)

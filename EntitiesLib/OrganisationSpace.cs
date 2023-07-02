@@ -21,5 +21,6 @@ namespace Mzeey.Entities
 
         public ICollection<TaskItem> TaskItems { get; set; }
         public ICollection<OrganisationUserSpace> OrganisationUserSpaces { get; set; } // Collection of user roles assigned to the organization space
+        public ICollection<OrganisationSpaceInvitation> OrganisationSpaceInvitations { get; set; } // Collection of user roles assigned to the organization space
     }
 }
