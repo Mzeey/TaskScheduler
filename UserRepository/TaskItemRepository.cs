@@ -30,12 +30,11 @@ namespace Mzeey.Repositories
         public async Task<TaskItem> CreateAsync(TaskItem task)
         {
             task.Id = UniqueIdGenerator.GenerateUniqueId();
-            task.Id = task.Id.ToUpper(); // Normalize the ID to uppercase
 
-            EntityEntry<TaskItem> added = await _db.Tasks.AddAsync(task);
+            await _db.Tasks.AddAsync(task);
             int affected = await _db.SaveChangesAsync();
 
-            return (affected == 1) ? _taskCache.AddOrUpdate(task.Id, task, UpdateCache) : null;
+            return (affected == 1) ? _taskCache.AddOrUpdate(task.Id, task, updateCache) : null;
         }
 
 
@@ -73,10 +72,10 @@ namespace Mzeey.Repositories
             _db.Tasks.Update(task);
             int affected = await _db.SaveChangesAsync();
 
-            return (affected == 1) ? UpdateCache(id, task) : null;
+            return (affected == 1) ? updateCache(id, task) : null;
         }
 
-        private TaskItem UpdateCache(string id, TaskItem taskItem)
+        private TaskItem updateCache(string id, TaskItem taskItem)
         {
             return CacheUtility<string>.UpdateCache(_taskCache, id, taskItem);
         }

@@ -1,4 +1,5 @@
-﻿using FluentNHibernate.Conventions.Inspections;
+﻿using Antlr.Runtime;
+using FluentNHibernate.Conventions.Inspections;
 using Moq;
 using Mzeey.Entities;
 using Mzeey.Repositories;
@@ -16,6 +17,7 @@ public class MockHelper
     private Mock<IOrganisationUserSpaceRepository> organisationUserSpaceRepositoryMock;
     private Mock<ITaskItemCommentRepository> taskItemCommentRepositoryMock;
     private Mock<IAuthenticationTokenRepository> authenticationTokenRepositoryMock;
+    private Mock<INotificationRepository> notificationRepositoryMock;
 
     public MockHelper()
     {
@@ -26,6 +28,7 @@ public class MockHelper
         organisationUserSpaceRepositoryMock = new Mock<IOrganisationUserSpaceRepository>();
         taskItemCommentRepositoryMock = new Mock<ITaskItemCommentRepository>();
         authenticationTokenRepositoryMock = new Mock<IAuthenticationTokenRepository>();
+        notificationRepositoryMock = new Mock<INotificationRepository>();
     }
 
     #region Repository_Configurations
@@ -404,11 +407,94 @@ public class MockHelper
 
         return authenticationTokenRepositoryMock;
     }
+    public Mock<INotificationRepository> ConfigureNotificationRepositoryMock()
+    {
+        var notifications = GenerateNotifications(10);
+        notificationRepositoryMock.Setup(repo => repo.CreateAsync(It.IsAny<Notification>()))
+            .ReturnsAsync((Notification notification) =>
+            {
+                int newIndex = notifications.Count + 1;
+                notification.Id = newIndex;
+                notification.SentDate = DateTime.Now;
+                notification.IsRead = false;
+                notifications.Add(notification);
+                return notification;
+            });
+
+        notificationRepositoryMock.Setup(repo => repo.RetrieveAllAsync()).ReturnsAsync((IEnumerable<Notification>) notifications.ToList());
+
+        notificationRepositoryMock.Setup(repo => repo.RetrieveAsync(It.IsAny<int>()))
+            .ReturnsAsync((int notificationId) =>
+            {
+                Notification notification = notifications.FirstOrDefault(t => t.Id == notificationId);
+                return notification;
+            });
+
+        notificationRepositoryMock.Setup(repo => repo.RetrieveAllByRecipientAsync(It.IsAny<string>()))
+            .ReturnsAsync((string recipientId) =>
+            {
+                var result = notifications.Where(n => n.RecipientId.ToUpper() == recipientId.ToUpper());
+                return result;
+            });
+
+        notificationRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<int>(), It.IsAny<Notification>()))
+            .ReturnsAsync((int id, Notification notification) =>
+            {
+                var existingNotification = notifications.FirstOrDefault(n => n.Id == id);
+                if (existingNotification == null)
+                {
+                    return null;
+                }
+
+                existingNotification = notification;
+                return existingNotification;
+            });
+
+        notificationRepositoryMock.Setup(repo => repo.DeleteAsync(It.IsAny<int>()))
+            .ReturnsAsync((int tokenId) =>
+            {
+                var existingToken = notifications.FirstOrDefault(t => t.Id == tokenId);
+                if (existingToken == null)
+                {
+                    return false;
+                }
+
+                notifications.Remove(existingToken);
+                return true;
+            });
+        notificationRepositoryMock.Setup(repo => repo.RetrieveAllByRecipientAsync(It.IsAny<string>()))
+            .ReturnsAsync((string recipientId) =>
+            {
+                var recipientNotifications = notifications.Where(n => n.RecipientId.ToUpper() == recipientId.ToUpper());
+                return recipientNotifications;
+            });
+
+        return notificationRepositoryMock;
+    }
     #endregion
 
     #region Helper_Methods
 
+    private List<Notification> GenerateNotifications(int count)
+    {
+        var notifications = new List<Notification>();
+        for (int i = 1; i <= count; i++)
+        {
+            var notification = new Notification
+            {
+                Id = i,
+                RecipientId = $"user-{i}",
+                NotificationTypeId = i,
+                Content = $"Notificaton-{i}'s content",
+                SentDate = DateTime.Now,
+                IsRead = (i % 2 == 0)
+            };
 
+            notifications.Add(notification);
+        }
+
+        return notifications;
+    }
 
     private List<User> GenerateUsers(int count)
     {
