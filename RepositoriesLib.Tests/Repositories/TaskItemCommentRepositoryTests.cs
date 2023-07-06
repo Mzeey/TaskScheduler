@@ -15,13 +15,13 @@ namespace RepositoriesLib.Tests.Repositories
     {
         public class TaskItemCommentRepositoryTest
         {
-            private readonly MockHelper mockHelper;
+            private readonly IMockHelper<ITaskItemCommentRepository> _mockHelper;
             private readonly ITaskItemCommentRepository taskItemCommentRepository;
 
             public TaskItemCommentRepositoryTest()
             {
-                mockHelper = new MockHelper();
-                taskItemCommentRepository = mockHelper.ConfigureTaskItemCommentRepository().Object;
+                _mockHelper = new TaskItemCommentRepositoryMockHelper();
+                taskItemCommentRepository = _mockHelper.ConfigureRepositoryMock().Object;
             }
 
             [Fact]

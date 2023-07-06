@@ -9,13 +9,13 @@ namespace RepositoriesLib.Tests.Repositories
 {
     public class RoleRepositoryTests
     {
-        private readonly MockHelper mockHelper;
+        private readonly IMockHelper<IRoleRepository> _mockHelper;
         private readonly IRoleRepository roleRepository;
 
         public RoleRepositoryTests()
         {
-            mockHelper = new MockHelper();
-            roleRepository = mockHelper.ConfigureRoleRepository().Object;
+            _mockHelper = new RoleRepositoryMockHelper();
+            roleRepository = _mockHelper.ConfigureRepositoryMock().Object;
         }
 
         [Fact]

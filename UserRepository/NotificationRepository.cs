@@ -37,6 +37,10 @@ namespace Mzeey.Repositories
         public async Task<bool> DeleteAsync(int id)
         {
             Notification notification = _db.Notifications.Find(id);
+            if(notification is null)
+            {
+                return false;
+            }
             _db.Notifications.Remove(notification);
             int affected = await _db.SaveChangesAsync();
             return (affected > 0) ? _notificationCache.TryRemove(id, out notification) : false;

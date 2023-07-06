@@ -8,13 +8,13 @@ namespace RepositoriesLib.Tests.Repositories
 {
     public class AuthenticationTokenRepositoryTests
     {
-        private readonly MockHelper mockHelper;
+        private readonly IMockHelper<IAuthenticationTokenRepository> _mockHelper;
         private readonly IAuthenticationTokenRepository authenticationTokenRepository;
 
         public AuthenticationTokenRepositoryTests()
         {
-            mockHelper = new MockHelper();
-            authenticationTokenRepository = mockHelper.ConfigureAuthenticationTokenRepository().Object;
+            _mockHelper = new AuthenticationTokenRepositoryMockHelper();
+            authenticationTokenRepository = _mockHelper.ConfigureRepositoryMock().Object;
         }
 
         [Fact]

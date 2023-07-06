@@ -13,13 +13,13 @@ namespace RepositoriesLib.Tests.Repositories
 {
     public class UserRepositoryTests
     {
-        private readonly MockHelper mockHelper;
+        private readonly IMockHelper<IUserRepository> _mockHelper;
         private readonly IUserRepository userRepository;
 
         public UserRepositoryTests()
         {
-            mockHelper = new MockHelper();
-            userRepository = mockHelper.ConfigureUserRepository().Object;
+            _mockHelper = new UserRepositoryMockHelper();
+            userRepository = _mockHelper.ConfigureRepositoryMock().Object;
         }
 
         [Fact]
