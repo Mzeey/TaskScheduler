@@ -34,9 +34,18 @@ namespace Mzeey.Repositories
             return (affected == 1) ? _userSpaceCache.AddOrUpdate(organisationUserSpace.Id, organisationUserSpace, updateCache) : null;
         }
 
-        public Task<bool> DeleteAsync(string id)
+        public async Task<bool> DeleteAsync(string id)
         {
-            throw new NotImplementedException();
+            var normalizedId = id.ToUpper();
+            OrganisationUserSpace existingOrganisationUserSpace = _db.OrganisationUserSpaces.FirstOrDefault(ous => ous.Id.ToUpper() == normalizedId);
+            if(existingOrganisationUserSpace is null)
+            {
+                return false;
+            }
+
+            _db.OrganisationUserSpaces.Remove(existingOrganisationUserSpace);
+            int affected = await _db.SaveChangesAsync();
+            return (affected > 1) ? _userSpaceCache.TryRemove(existingOrganisationUserSpace.Id, out existingOrganisationUserSpace) : false;
         }
 
         public async Task<IEnumerable<OrganisationUserSpace>> RetrieveAllAsync()
