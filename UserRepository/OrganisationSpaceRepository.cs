@@ -52,6 +52,15 @@ namespace Mzeey.Repositories
 
         public async Task<OrganisationSpace> UpdateAsync(string id, OrganisationSpace space)
         {
+            var normalizedId = id.ToUpper();
+            if(normalizedId != space.Id.ToUpper())
+            {
+                return null;
+            }
+            var existingUser = _db.OrganisationSpaces.FirstOrDefault(os => os.Id.ToUpper() == normalizedId);
+            if (existingUser == null)
+                return null;
+
             _db.OrganisationSpaces.Update(space);
             int affected = await _db.SaveChangesAsync();
 
@@ -73,18 +82,9 @@ namespace Mzeey.Repositories
             });
         }
 
-        public async Task<IEnumerable<OrganisationSpace>> RetrieveAllByUserIdAsync(string userId)
+        public async Task<IEnumerable<OrganisationSpace>> RetrieveAllByCreatorIdAsync(string userId)
         {
-            return await Task.Run<IEnumerable<OrganisationSpace>>(() =>
-            {
-                userId = userId.ToUpper();
-                IEnumerable<OrganisationSpace> spaces = _organisationSpaceCache.Values.Where(sp =>
-                {
-                    User user = sp.Users.FirstOrDefault(u => u.Id.ToUpper() == userId);
-                    return user != null;
-                });
-                return spaces;
-            });
+            return await Task.Run<IEnumerable<OrganisationSpace>>(() => _organisationSpaceCache.Values.Where(os => os.CreatorId.ToUpper() == userId.ToUpper()));
         }
 
         private OrganisationSpace updateCache(string id, OrganisationSpace organisationSpace)

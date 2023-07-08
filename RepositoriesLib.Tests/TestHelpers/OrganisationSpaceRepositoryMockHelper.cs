@@ -26,15 +26,13 @@ namespace RepositoriesLib.Tests.TestHelpers
             _repositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<string>(), It.IsAny<OrganisationSpace>()))
                 .ReturnsAsync((string id, OrganisationSpace space) =>
                 {
-                    var existingSpace = spaces.FirstOrDefault(s => s.Id == id);
+                    var existingSpace = spaces.FirstOrDefault(s => s.Id.ToUpper() == id.ToUpper());
                     if (existingSpace == null)
                     {
                         return existingSpace;
                     }
 
-                    existingSpace.Title = space.Title;
-                    existingSpace.Description = space.Description;
-
+                    existingSpace = space;
                     return existingSpace;
                 });
 
@@ -44,19 +42,10 @@ namespace RepositoriesLib.Tests.TestHelpers
             _repositoryMock.Setup(repo => repo.RetrieveAsync(It.IsAny<string>()))
                 .ReturnsAsync((string spaceId) => spaces.FirstOrDefault(s => s.Id == spaceId));
 
-            _repositoryMock.Setup(repo => repo.RetrieveAllByUserIdAsync(It.IsAny<string>()))
+            _repositoryMock.Setup(repo => repo.RetrieveAllByCreatorIdAsync(It.IsAny<string>()))
                 .ReturnsAsync((string userId) =>
                 {
-                    var userSpaces = new List<OrganisationSpace>();
-                    // Retrieve all organization spaces associated with the user with the provided ID
-                    foreach (var space in spaces)
-                    {
-                        if (space.Users.Any(u => u.Id == userId))
-                        {
-                            userSpaces.Add(space);
-                        }
-                    }
-                    return userSpaces;
+                    return spaces.Where(os => os.CreatorId.ToUpper() == userId.ToUpper());
                 });
 
             _repositoryMock.Setup(repo => repo.DeleteAsync(It.IsAny<string>()))

@@ -47,7 +47,7 @@ namespace RepositoriesLib.Tests.Repositories
         public async Task UpdateAsync_ExistingOrganisationSpaceId_ReturnsUpdatedOrganisationSpace()
         {
             // Arrange
-            var organisationSpaceId = "existing-id";
+            var organisationSpaceId = "space_id - 4";
             var existingOrganisationSpace = await _organisationSpaceRepository.RetrieveAsync(organisationSpaceId);
 
             Assert.NotNull(existingOrganisationSpace);
@@ -103,19 +103,19 @@ namespace RepositoriesLib.Tests.Repositories
             var userId = "user-1";
 
             // Act
-            var organisationSpaces = await _organisationSpaceRepository.RetrieveAllByUserIdAsync(userId);
+            var organisationSpaces = await _organisationSpaceRepository.RetrieveAllByCreatorIdAsync(userId);
 
             // Assert
             Assert.NotNull(organisationSpaces);
             Assert.NotEmpty(organisationSpaces);
-            Assert.All(organisationSpaces, space => Assert.Contains(userId, space.Users.Select(u => u.Id)));
+            Assert.All(organisationSpaces, space => Assert.Equal(userId, space.CreatorId));
         }
 
         [Fact]
         public async Task DeleteAsync_ExistingOrganisationSpaceId_DeletesOrganisationSpace()
         {
             // Arrange
-            var organisationSpaceId = "space_id - 3";
+            var organisationSpaceId = "space_id - 5";
             var existingOrganisationSpace = await _organisationSpaceRepository.RetrieveAsync(organisationSpaceId);
 
             // Act

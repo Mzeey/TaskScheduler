@@ -13,7 +13,7 @@ namespace Mzeey.Repositories
         Task<OrganisationSpace> UpdateAsync(string id, OrganisationSpace space);
         Task<IEnumerable<OrganisationSpace>> RetrieveAllAsync();
         Task<OrganisationSpace> RetrieveAsync(string spaceId);
-        Task<IEnumerable<OrganisationSpace>> RetrieveAllByUserIdAsync(string userId);
+        Task<IEnumerable<OrganisationSpace>> RetrieveAllByCreatorIdAsync(string userId);
         Task<bool> DeleteAsync(string spaceId);
     }
 }
