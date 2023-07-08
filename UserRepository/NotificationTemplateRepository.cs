@@ -15,12 +15,13 @@ namespace Mzeey.Repositories
     public class NotificationTemplateRepository : INotificationTemplateRepository
     {
         private readonly TaskSchedulerContext _db;
-        private readonly ConcurrentDictionary<int, NotificationTemplate> _notificationTemplateCache;
+        private static ConcurrentDictionary<int, NotificationTemplate> _notificationTemplateCache;
         public NotificationTemplateRepository(TaskSchedulerContext db) {
             _db = db;
-            _notificationTemplateCache = new ConcurrentDictionary<int, NotificationTemplate>(
-                    _db.NotificationTemplates.ToDictionary(nt => nt.Id)
-                );
+            if(_notificationTemplateCache is null)
+                _notificationTemplateCache = new ConcurrentDictionary<int, NotificationTemplate>(
+                        _db.NotificationTemplates.ToDictionary(nt => nt.Id)
+                    );
         }
 
         public async Task<NotificationTemplate> CreateAsync(NotificationTemplate notificationTemplate)

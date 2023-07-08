@@ -29,7 +29,7 @@ namespace Mzeey.Repositories
 
         public async Task<User> CreateAsync(User user)
         {
-            EntityEntry<User> added = await _db.Users.AddAsync(user);
+            await _db.Users.AddAsync(user);
             int affected = await _db.SaveChangesAsync();
 
             return (affected == 1) ? _userCache.AddOrUpdate(user.Id, user, updateCache) : null;
@@ -37,6 +37,13 @@ namespace Mzeey.Repositories
 
         public async Task<User> UpdateAsync(string userId, User user)
         {
+            if (userId.ToUpper() != user.Id.ToUpper())
+                return null;
+            var existingUser = _db.Users.FirstOrDefault(u => u.Id.ToUpper() == userId.ToUpper());
+            if(existingUser == null)
+            {
+                return null;
+            }
             _db.Users.Update(user);
             int affected = await _db.SaveChangesAsync();
 
@@ -92,7 +99,5 @@ namespace Mzeey.Repositories
         {
             return CacheUtility<string>.UpdateCache(_userCache, id, user);
         }
-
-
     }
 }

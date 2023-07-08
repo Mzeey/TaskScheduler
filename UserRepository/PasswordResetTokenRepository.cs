@@ -14,7 +14,17 @@ namespace Mzeey.Repositories
     public class PasswordResetTokenRepository : IPasswordResetTokenRepository
     {
         private readonly TaskSchedulerContext _db;
-        private readonly ConcurrentDictionary<int, PasswordResetToken> _passwordResetTokenCache;
+        private static ConcurrentDictionary<int, PasswordResetToken> _passwordResetTokenCache;
+
+        public PasswordResetTokenRepository(TaskSchedulerContext db)
+        {
+            _db = db;
+            if (_passwordResetTokenCache is null)
+                _passwordResetTokenCache = new ConcurrentDictionary<int, PasswordResetToken>(
+                        _db.PasswordResetTokens.ToDictionary(prt => prt.Id)
+                    );
+        }
+
         public async Task<PasswordResetToken> CreateAsync(PasswordResetToken passwordResetToken)
         {
             await _db.PasswordResetTokens.AddAsync(passwordResetToken);

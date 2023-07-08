@@ -14,14 +14,15 @@ namespace RepositoriesLib
     public class NotificationSettingRepository : INotificationSettingRepository
     {
         private readonly TaskSchedulerContext _db;
-        private readonly ConcurrentDictionary<int, NotificationSetting> _notificationSettingsCache;
+        private static ConcurrentDictionary<int, NotificationSetting> _notificationSettingsCache;
 
         public NotificationSettingRepository(TaskSchedulerContext db)
         {
             _db = db;
-            _notificationSettingsCache = new ConcurrentDictionary<int, NotificationSetting>(
-                    _db.NotificationSettings.ToDictionary(ns => ns.Id)
-                );
+            if(_notificationSettingsCache is null )
+                _notificationSettingsCache = new ConcurrentDictionary<int, NotificationSetting>(
+                        _db.NotificationSettings.ToDictionary(ns => ns.Id)
+                    );
         }
         public async Task<NotificationSetting> CreateAsync(NotificationSetting notificationSetting)
         {

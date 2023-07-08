@@ -14,7 +14,7 @@ namespace Mzeey.Repositories
     public class TaskItemRepository : ITaskItemRepository
     {
         private static ConcurrentDictionary<string, TaskItem> _taskCache;
-        private TaskSchedulerContext _db;
+        private readonly TaskSchedulerContext _db;
 
         public TaskItemRepository(TaskSchedulerContext db)
         {

@@ -20,9 +20,10 @@ namespace RepositoriesLib
         public NotificationTypeRepository(TaskSchedulerContext db)
         {
             _db = db;
-            _notificationTypeCache = new ConcurrentDictionary<int, NotificationType>(
-                 _db.NotificationTypes.ToDictionary(nt => nt.Id)
-            );
+            if(_notificationTypeCache is null)
+                _notificationTypeCache = new ConcurrentDictionary<int, NotificationType>(
+                     _db.NotificationTypes.ToDictionary(nt => nt.Id)
+                );
         }
         public async Task<NotificationType> CreateAsync(NotificationType notificationType)
         {
