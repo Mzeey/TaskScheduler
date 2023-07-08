@@ -17,6 +17,9 @@ namespace Mzeey.Entities
 
         public bool IsPrivate { get; set; }
 
+        public string CreatorId { get; set; }
+        public User Creator { get; set; }
+
         public ICollection<User> Users { get; set; } 
 
         public ICollection<TaskItem> TaskItems { get; set; }

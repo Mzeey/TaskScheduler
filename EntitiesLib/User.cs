@@ -27,5 +27,6 @@ namespace Mzeey.Entities
         public ICollection<OrganisationSpaceInvitation> ReceivedOrganisationSpaceInvitations { get; set; }
         public ICollection<NotificationSetting> NotificationSettings { get; set; }
         public ICollection<Notification> Notifications { get; set; }
+        public ICollection<OrganisationSpace> CreatedOrganisationSpaces { get; set; }
     }
 }

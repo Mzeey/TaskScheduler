@@ -44,7 +44,7 @@ namespace RepositoriesLib.Tests.TestHelpers
             _repositoryMock.Setup(repo => repo.RetrieveAsync(It.IsAny<string>()))
                 .ReturnsAsync((string spaceId) => spaces.FirstOrDefault(s => s.Id == spaceId));
 
-            _repositoryMock.Setup(repo => repo.RetrieveByUserIdAsync(It.IsAny<string>()))
+            _repositoryMock.Setup(repo => repo.RetrieveAllByUserIdAsync(It.IsAny<string>()))
                 .ReturnsAsync((string userId) =>
                 {
                     var userSpaces = new List<OrganisationSpace>();
@@ -82,9 +82,10 @@ namespace RepositoriesLib.Tests.TestHelpers
             {
                 var space = new OrganisationSpace
                 {
-                    Id = GenerateUniqueId(),
+                    Id = $"space_id - {i}",
                     Title = "Organisation Space " + i,
                     Description = "Description for Organisation Space " + i,
+                    CreatorId = $"user-{i}",
                     IsPrivate = new Random().Next(2) == 0
                 };
 

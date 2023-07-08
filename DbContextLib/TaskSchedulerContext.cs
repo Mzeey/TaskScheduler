@@ -100,7 +100,15 @@ namespace Mzeey.DbContextLib
             modelBuilder.Entity<OrganisationSpace>()
                 .HasMany(os => os.OrganisationUserSpaces)
                 .WithOne(ous => ous.OrganisationSpace)
-                .HasForeignKey(os => os.OrganisationSpaceId);
+                .HasForeignKey(ous => ous.OrganisationSpaceId);
+
+            modelBuilder.Entity<OrganisationSpace>()
+                .HasOne(os => os.Creator)
+                .WithMany(u => u.CreatedOrganisationSpaces)
+                .HasForeignKey(os => os.CreatorId)
+                .HasPrincipalKey(u => u.Id)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+            
 
             //OrganisationSpaceInvitation
             modelBuilder.Entity<OrganisationSpaceInvitation>()
