@@ -73,6 +73,7 @@ namespace RepositoriesLib.Tests.TestHelpers
         protected override List<T> GenerateData<T>(int count)
         {
             var users = new List<T>();
+            var rand = new Random();
 
             for (int i = 0; i < count; i++)
             {
@@ -84,7 +85,9 @@ namespace RepositoriesLib.Tests.TestHelpers
                     Username = $"user{i + 1}",
                     Password = "password",
                     Email = $"user{i + 1}@example.com",
-                    Salt = "salt"
+                    Salt = "salt",
+                    IsEmailVerified = rand.Next(2) % 2 == 0,
+                    LastLoginDate = null,
                 };
 
                 users.Add((T)(object)user);

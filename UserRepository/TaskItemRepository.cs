@@ -40,8 +40,11 @@ namespace Mzeey.Repositories
 
         public async Task<bool> DeleteAsync(string taskId)
         {
-            taskId = taskId.ToUpper(); // Normalize the ID to uppercase
-            TaskItem taskItem = _db.Tasks.Find(taskId);
+            TaskItem taskItem = _db.Tasks.FirstOrDefault(ti => ti.Id.ToUpper() == taskId.ToUpper());
+            if(taskItem is null)
+            {
+                return false;
+            }
             _db.Tasks.Remove(taskItem);
             int affected = await _db.SaveChangesAsync();
             return (affected == 1) ? _taskCache.TryRemove(taskId, out taskItem) : false;
@@ -56,7 +59,6 @@ namespace Mzeey.Repositories
         {
             return Task.Run<TaskItem>(() =>
             {
-                taskId = taskId.ToUpper();
                 TaskItem taskitem;
                 _taskCache.TryGetValue(taskId, out taskitem);
                 return taskitem;
@@ -65,9 +67,10 @@ namespace Mzeey.Repositories
 
         public async Task<TaskItem> UpdateAsync(string id, TaskItem task)
         {
-            id = id.ToUpper();
-
-            task.Id = task.Id.ToUpper();
+            if(id.ToUpper() != task.Id.ToUpper())
+            {
+                return null;
+            }
 
             _db.Tasks.Update(task);
             int affected = await _db.SaveChangesAsync();
