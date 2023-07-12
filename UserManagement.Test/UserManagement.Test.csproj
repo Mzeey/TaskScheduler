@@ -26,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DbContextLib\DbContextLib.csproj" />
     <ProjectReference Include="..\EntitiesLib\EntitiesLib.csproj" />
+    <ProjectReference Include="..\RepositoriesLib.Tests\RepositoriesLib.Tests.csproj" />
     <ProjectReference Include="..\SharedLib\SharedLib.csproj" />
     <ProjectReference Include="..\UserManagementLib\UserManagementLib.csproj" />
   </ItemGroup>
