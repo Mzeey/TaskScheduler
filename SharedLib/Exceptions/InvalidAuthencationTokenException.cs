@@ -20,6 +20,6 @@ namespace Mzeey.SharedLib.Exceptions
         public InvalidAuthenticationTokenException(string authenticationToken, string message, Exception innerException) : base(message, innerException)
         {
         }
-        }
+        
     }
 }

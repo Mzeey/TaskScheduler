@@ -79,7 +79,7 @@ namespace RepositoriesLib.Tests.TestHelpers
             {
                 var user = new User
                 {
-                    Id = GenerateUniqueId(),
+                    Id = $"user-{i + 1}",
                     FirstName = "User",
                     LastName = (i + 1).ToString(),
                     Username = $"user{i + 1}",

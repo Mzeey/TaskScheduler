@@ -42,6 +42,14 @@ namespace UserManagementLib.Services
 
         public async Task<string> GenerateAuthenticationToken(string userId, string encryptionKey)
         {
+            if (string.IsNullOrEmpty(userId))
+            {
+                throw new ArgumentException("User Id is null");
+            }
+
+            if (string.IsNullOrEmpty(encryptionKey)){
+                throw new ArgumentException("Encryption Key is null");
+            }
 
             User user = await _userRepository.RetrieveAsync(userId);
 

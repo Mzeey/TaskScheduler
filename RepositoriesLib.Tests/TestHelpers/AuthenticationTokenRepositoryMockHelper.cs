@@ -59,7 +59,7 @@ namespace RepositoriesLib.Tests.TestHelpers
                 {
                     Id = i + 1,
                     Token = GenerateUniqueId(),
-                    UserId = GenerateUniqueId(),
+                    UserId = $"user-{i +1 }",
                     IssuedDate = DateTime.Now,
                     ExpirationDate = DateTime.Now.AddDays(1)
                 };
