@@ -32,6 +32,9 @@ namespace RepositoriesLib.Tests.TestHelpers
                     AuthenticationToken token = tokens.FirstOrDefault(t => t.Id == tokenId);
                     return token;
                 });
+            _repositoryMock.Setup(repo => repo.RetrieveByTokenAsync(It.IsAny<string>())).ReturnsAsync((string token) => tokens.FirstOrDefault(t => t.Token.ToUpper() == token.ToUpper()));
+            
+            _repositoryMock.Setup(repo => repo.RetrieveAllByUserIdAsync(It.IsAny<string>())).ReturnsAsync((string userId) => tokens.Where(t => t.UserId.ToUpper() == userId.ToUpper()));
 
             _repositoryMock.Setup(repo => repo.DeleteAsync(It.IsAny<int>()))
                 .ReturnsAsync((int tokenId) =>
@@ -58,8 +61,8 @@ namespace RepositoriesLib.Tests.TestHelpers
                 var token = new AuthenticationToken
                 {
                     Id = i + 1,
-                    Token = GenerateUniqueId(),
-                    UserId = $"user-{i +1 }",
+                    Token = $"authentication-token-{i + 1}",
+                    UserId = $"user-{i + 1}",
                     IssuedDate = DateTime.Now,
                     ExpirationDate = DateTime.Now.AddDays(1)
                 };

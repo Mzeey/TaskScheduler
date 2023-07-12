@@ -25,7 +25,12 @@ namespace UserManagementLib.Services
         {
             if (string.IsNullOrEmpty(authenticationToken))
             {
-                throw new InvalidAuthenticationTokenException(authenticationToken, "Authentication Token is not provided");
+                throw new ArgumentException("Authentication Token is null");
+            }
+
+            if (string.IsNullOrEmpty(decryptionKey))
+            {
+                throw new ArgumentException("Decryption Key is null");
             }
 
             string decryptedToken = decryptAuthenticationToken(authenticationToken, decryptionKey);
@@ -82,8 +87,14 @@ namespace UserManagementLib.Services
         {
             if (string.IsNullOrEmpty(authenticationToken))
             {
-                throw new InvalidAuthenticationTokenException(authenticationToken, "Authentication Token is not provided");
+                throw new ArgumentException("Authentication Token is null");
             }
+
+            if (string.IsNullOrEmpty(decryptionKey))
+            {
+                throw new ArgumentException("Decryption Key is null");
+            }
+
             string decryptedAuthenticationToken = decryptAuthenticationToken(authenticationToken, decryptionKey);
             AuthenticationToken exisitingAuthenticationToken = await _authenticationTokenRepository.RetrieveByTokenAsync(decryptedAuthenticationToken);
             if (exisitingAuthenticationToken is null)

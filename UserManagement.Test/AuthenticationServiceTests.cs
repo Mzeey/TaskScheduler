@@ -10,6 +10,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using UserManagementLib.Services;
@@ -118,12 +119,123 @@ namespace UserManagement.Test
         }
 
         #endregion
+        #region DeleteAuthenticationToken Test Methods
+        [Fact]
+        public async Task DeleteAuthenticationToken_ValidToken_DeletesToken()
+        {
+            string userId = "user-1";
+
+            string generatedToken = EncryptionHelper.Encrypt("authentication-token-1", _encryptionKey);
+
+            
+            var result = await _authenticationService.DeleteAuthenticationToken(generatedToken, _encryptionKey);
+            
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task DeleteAuthenticationToken_InvalidToken_ThrowsInvalidAuthenticationTokenException()
+        {
+            
+            string authenticationToken = "invalidToken";
+
+            Assert.ThrowsAsync<InvalidAuthenticationTokenException>(async () => await _authenticationService.DeleteAuthenticationToken(authenticationToken, _encryptionKey));
+        }
+
+        [Fact]
+        public async Task DeleteAuthenticationToken_NullToken_ThrowsArgumentException()
+        {
+            // Arrange
+            string authenticationToken = null;
+
+            Assert.ThrowsAsync<InvalidAuthenticationTokenException>(async () => await _authenticationService.DeleteAuthenticationToken(authenticationToken, _encryptionKey));
+        }
+
+        [Fact]
+        public async Task DeleteAuthenticationToken_NullDecryptionKey_ThrowsArgumentException()
+        {
+            // Arrange
+            string authenticationToken = "validToken";
+
+            Assert.ThrowsAsync<InvalidAuthenticationTokenException>(async () => await _authenticationService.DeleteAuthenticationToken(authenticationToken, null));
+        }
+        #endregion
+
+        #region ValidateAuthenticationToken Test Methods
+        [Fact]
+        public async Task ValidateAuthenticationToken_ValidToken_ReturnsUser()
+        {
+            string userId = "user-1";
+            string generatedToken = EncryptionHelper.Encrypt("authentication-token-1", _encryptionKey);
+
+            User user = await _authenticationService.ValidateAuthenticationToken(generatedToken, _encryptionKey);
+
+            Assert.NotNull(user);
+            Assert.Equal(userId, user.Id);
+        }
+
+        [Fact]
+        public async Task ValidateAuthenticationToken_InvalidToken_ThrowsInvalidAuthenticationTokenException()
+        {
+            string authenticationToken = EncryptionHelper.Encrypt("invalidToken", _encryptionKey);
+
+            await Assert.ThrowsAsync<InvalidAuthenticationTokenException>(async () =>
+            {
+                await _authenticationService.ValidateAuthenticationToken(authenticationToken, _encryptionKey);
+            });
+        }
+
+        [Fact]
+        public async Task ValidateAuthenticationToken_NullToken_ThrowsArgumentException()
+        {
+            string authenticationToken = null;
+
+            await Assert.ThrowsAsync<ArgumentException>(async () =>
+            {
+                await _authenticationService.ValidateAuthenticationToken(authenticationToken, _encryptionKey);
+            });
+        }
+
+        [Fact]
+        public async Task ValidateAuthenticationToken_NullDecryptionKey_ThrowsArgumentException()
+        {
+            string authenticationToken = "validToken";
+
+            await Assert.ThrowsAsync<ArgumentException>(async () =>
+            {
+                await _authenticationService.ValidateAuthenticationToken(authenticationToken, null);
+            });
+        }
+
+        [Fact]
+        public async Task ValidateAuthenticationToken_UserNotFound_ThrowsUserNotFoundException()
+        {
+            string generatedToken = EncryptionHelper.Encrypt("token-1", _encryptionKey);
+            
+
+            var authenticationRepository = new Mock<IAuthenticationTokenRepository>();
+            authenticationRepository.Setup(repo => repo.RetrieveByTokenAsync(It.IsAny<string>()))
+                .ReturnsAsync((string token) =>
+                {
+                    var authTokens = new List<AuthenticationToken>{
+                        new AuthenticationToken { Id = 1, UserId = "non_existing_user_id", Token = "token-1"}
+                    };
+                    return authTokens.FirstOrDefault(at => at.Token.ToUpper() == token.ToUpper());
+                });
+
+            var authenticationService = new AuthenticationService(authenticationRepository.Object, _userRepository);
+
+            Assert.ThrowsAsync<UserNotFoundException>(async () =>
+            {
+                await authenticationService.ValidateAuthenticationToken(generatedToken, _encryptionKey);
+            });
+        }
+        #endregion
 
         private async Task<string> GetUserIdFromToken(string token)
         {
             
             User user = await _authenticationService.ValidateAuthenticationToken(token, _encryptionKey);
-
             
             return user.Id;
         }

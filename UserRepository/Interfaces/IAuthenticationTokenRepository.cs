@@ -12,6 +12,6 @@ namespace Mzeey.Repositories
         Task<IEnumerable<AuthenticationToken>> RetrieveAllAsync();
         Task<AuthenticationToken> RetrieveAsync(int tokenId);
         Task<AuthenticationToken> RetrieveByTokenAsync(string token);
-        Task<IEnumerable<AuthenticationToken>> RetrieveByUserIdAsync(string userId);
+        Task<IEnumerable<AuthenticationToken>> RetrieveAllByUserIdAsync(string userId);
     }
 }
