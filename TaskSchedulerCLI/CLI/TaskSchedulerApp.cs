@@ -28,8 +28,8 @@ namespace TaskSchedulerCLI.CLI
             _taskService = taskService;
 
             _menuHandler = new MenuHandler();
-            _userApp = new UserApp(_userService);
-            _taskApp = new TaskApp(_taskService, _userService);
+            //_userApp = new UserApp(_userService);
+            //_taskApp = new TaskApp(_taskService, _userService);
         }
 
         public void Run()
