@@ -10,16 +10,19 @@ namespace Mzeey.UserManagementLib.Services
 {
     public interface IUserService
     {
-        Task<User> CreateUserAsync(string firstName, string lastName, string username, string password, string email, UserRole userRole);
-        Task<User> UpdateUserAsync(string userId, string firstName, string lastName, string email);
-        Task<bool> DeleteUserAsync(string userId);
+        Task<User> RegisterUserAsync(string firstName, string lastName, string username, string password, string email);
+        Task<string> LoginUserAsync(string username, string password, string encryptionKey);
+        Task<bool> LogoutUserAsync(string authenticationToken, string decryptionKey);
+
+        Task<IEnumerable<User>> GetAllUsersAsync();
         Task<User> GetUserAsync(string userId);
         Task<User> GetUserByUsernameAsync(string username);
-        Task<User> ChangeUserRoleAsync(string userId, UserRole newRole);
-        Task<User> ChangeUserPassword(string userId, string oldpassword, string newPassword);
-        Task<IEnumerable<User>> GetAllUsersAsync();
-        Task<string> LoginAsync(string username, string password);
-        Task<bool> LogoutAsync(string token);
-        string GetLoggedInUserId();
+        Task<User> UpdateUserAsync(string userId, string firstName, string lastName, string email);
+        Task<bool> DeleteUserAsync(string userId);
+
+        Task<string> RequestPasswordResetAsync(string email, string encryptionKey);
+        Task<bool> ResetPasword(string resetToken, string decryptionKey);
+        Task<User> ChangeUserPasswordAsync(string userId, string oldpassword, string newPassword);
+
     }
 }

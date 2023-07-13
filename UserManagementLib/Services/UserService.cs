@@ -6,44 +6,41 @@ using Mzeey.SharedLib.Enums;
 using Mzeey.SharedLib.Utilities;
 using Mzeey.Repositories;
 using Mzeey.UserManagementLib.Utilities;
+using Mzeey.SharedLib.Exceptions;
+using UserManagementLib.Services;
 
 namespace Mzeey.UserManagementLib.Services
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-        private readonly IAuthenticationTokenRepository _tokenRepository;
-        private string _loggedInUserId;
-        public string GetLoggedInUserId()
-        {
-            return _loggedInUserId;
-        }
+        private readonly IAuthenticationService _authenticationService;
 
-        public UserService(IUserRepository userRepository, IAuthenticationTokenRepository tokenRepository)
+        public UserService(IUserRepository userRepository, IAuthenticationService authenticationService)
         {
             _userRepository = userRepository;
-            _tokenRepository = tokenRepository;
+            _authenticationService = authenticationService;
         }
 
-        public async Task<User> CreateUserAsync(string firstName, string lastName, string username, string password, string email, UserRole userRole)
+        public async Task<User> RegisterUserAsync(string firstName, string lastName, string username, string password, string email)
         {
-            // Check if a user with the same username already exists
             User existingUser = await _userRepository.RetrieveByUserNameAsync(username);
-            if (existingUser != null)
-            {
-                throw new ArgumentException("Username already exists");
-            }
-            existingUser = await _userRepository.RetrieveByEmailAsync(email);
+            
             if(existingUser != null)
             {
-                throw new ArgumentException("Email already Exist");
+                throw new Exception($"Username: '{username}' is already in use");
             }
 
-            // Generate a salt and hash the password
+            existingUser = await _userRepository.RetrieveByEmailAsync(email);
+
+            if(existingUser != null)
+            {
+                throw new Exception($"Email: '{email}' is already registered with us");
+            }
+
             string salt = PasswordHasher.GenerateSalt();
             string hashedPassword = PasswordHasher.HashPassword(password, salt);
 
-            // Create the user entity
             User newUser = new User
             {
                 Id = UniqueIdGenerator.GenerateUniqueId(),
@@ -51,11 +48,67 @@ namespace Mzeey.UserManagementLib.Services
                 LastName = lastName,
                 Username = username,
                 Password = hashedPassword,
-                Salt = salt,
                 Email = email,
+                IsEmailVerified = false,
+                LastLoginDate = null,
+                Salt = salt
             };
 
             return await _userRepository.CreateAsync(newUser);
+        }
+
+        public async Task<string> LoginUserAsync(string username, string password, string encryptionKey)
+        {
+            User user = await _userRepository.RetrieveByUserNameAsync(username);
+
+            if (user == null)
+            {
+                throw new InvalidLoginCredentialsException();
+            }
+
+            bool passwordValid = PasswordHasher.VerifyPassword(password, user.Salt, user.Password);
+            if (!passwordValid)
+            {
+                throw new InvalidLoginCredentialsException();
+            }
+
+            string token;
+
+            try
+            {
+                token = await _authenticationService.GenerateAuthenticationToken(user.Id, encryptionKey);
+            }
+            catch
+            {
+                throw new LoginFailedException();
+            }
+
+            return token;
+        }
+
+
+        public async Task<bool> LogoutUserAsync(string authenticationToken, string decryptionKey)
+        {
+            bool tokenDeleted = await _authenticationService.DeleteAuthenticationToken(authenticationToken, decryptionKey);
+
+            return tokenDeleted;
+        }
+
+
+        #region User_Data_Management_Functions
+        public async Task<User> GetUserAsync(string userId)
+        {
+            return await _userRepository.RetrieveAsync(userId);
+        }
+
+        public async Task<User> GetUserByUsernameAsync(string username)
+        {
+            return await _userRepository.RetrieveByUserNameAsync(username);
+        }
+
+        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        {
+            return await _userRepository.RetrieveAllAsync();
         }
 
         public async Task<User> UpdateUserAsync(string userId, string firstName, string lastName, string email)
@@ -63,7 +116,7 @@ namespace Mzeey.UserManagementLib.Services
             User existingUser = await _userRepository.RetrieveAsync(userId);
             if (existingUser == null)
             {
-                return null; // User not found
+                throw new UserNotFoundException(userId);
             }
 
             existingUser.FirstName = firstName;
@@ -77,100 +130,53 @@ namespace Mzeey.UserManagementLib.Services
         {
             return await _userRepository.DeleteAsync(userId);
         }
+        #endregion
 
-        public async Task<User> GetUserAsync(string userId)
-        {
-            return await _userRepository.RetrieveAsync(userId.ToUpper());
-        }
 
-        public async Task<User> GetUserByUsernameAsync(string username)
-        {
-            return await _userRepository.RetrieveByUserNameAsync(username);
-        }
 
-        public async Task<IEnumerable<User>> GetAllUsersAsync()
-        {
-            return await _userRepository.RetrieveAllAsync();
-        }
 
-        public async Task<string> LoginAsync(string username, string password)
-        {
-            // Retrieve the user by username
-            User user = await _userRepository.RetrieveByUserNameAsync(username);
-            if (user == null)
-            {
-                throw new ArgumentException("Invalid username");
-            }
-
-            // Verify the password
-            bool isPasswordValid = PasswordHasher.VerifyPassword(password, user.Salt, user.Password);
-            if (!isPasswordValid)
-            {
-                throw new ArgumentException("Invalid password");
-            }
-
-            _loggedInUserId = getUserIDByUsername(username).Result;
-
-            // Generate an authentication token
-            string token = UniqueIdGenerator.GenerateUniqueId();
-
-            // Create the authentication token entity
-            AuthenticationToken authToken = new AuthenticationToken
-            {
-                UserId = user.Id,
-                Token = token,
-                IssuedDate = DateTime.Now,
-                ExpirationDate = DateTime.Now.AddDays(7) // Set the token expiration to 7 days
-            };
-
-            // Save the authentication token
-            await _tokenRepository.CreateAsync(authToken);
-
-            return token;
-        }
-
-        private async Task<string> getUserIDByUsername(string username)
-        {
-            User user = await _userRepository.RetrieveByUserNameAsync(username);
-            return user.Id;
-        }
-
-        public async Task<bool> LogoutAsync(string token)
-        {
-            // Retrieve the authentication token by token value
-            AuthenticationToken authToken = await _tokenRepository.RetrieveByTokenAsync(token);
-            if (authToken == null)
-            {
-                return false; // Token not found
-            }
-            _loggedInUserId = string.Empty;
-
-            // Delete the authentication token
-            return await _tokenRepository.DeleteAsync(authToken.Id);
-        }
-
-        public async Task<User> ChangeUserRoleAsync(string userId, UserRole newRole)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<User> ChangeUserPassword(string userId, string oldpassword, string newPassword)
+        #region Password_Management_Functions
+        public async Task<User> ChangeUserPasswordAsync(string userId, string oldpassword, string newPassword)
         {
             User user = await _userRepository.RetrieveAsync(userId);
-            if(user == null)
+            if (user == null)
             {
-                throw new Exception("Current User does not Exist");
+                throw new UserNotFoundException(userId);
             }
 
-            oldpassword = PasswordHasher.HashPassword(oldpassword, user.Salt);
-            if(user.Password != oldpassword)
+            bool passwordMatch = PasswordHasher.VerifyPassword(oldpassword, user.Salt, user.Password);
+            if (!passwordMatch)
             {
                 throw new Exception("Invalid current Password");
             }
+
             newPassword = PasswordHasher.HashPassword(newPassword, user.Salt);
 
             user.Password = newPassword;
             return await _userRepository.UpdateAsync(userId, user);
+        }
+
+        //To be implemented with the notification service and emailProviderService
+        public Task<string> RequestPasswordResetAsync(string email, string encryptionKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> ResetPasword(string resetToken, string decryptionKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        private string encryptPasswordResetToken(string password, string encryptionKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        private string descryptPasswordResetToken(string passwordResetToken, string decryptionKey)
+        {
+            throw new NotImplementedException();
         }
     }
 }

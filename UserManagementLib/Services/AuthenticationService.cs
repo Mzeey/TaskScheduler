@@ -65,12 +65,12 @@ namespace UserManagementLib.Services
 
             DateTime currentDate = DateTime.Now;
             string token = generateUniqueToken();
-            const int token_Valid_Period_Extension_In_Days = 14;
+            const int token_Validity_Period_Extension_In_Days = 14;
 
             AuthenticationToken authenticationToken = new AuthenticationToken {
                 IssuedDate = currentDate,
                 Token = token,
-                ExpirationDate= currentDate.AddDays(token_Valid_Period_Extension_In_Days),
+                ExpirationDate = currentDate.AddDays(token_Validity_Period_Extension_In_Days),
                 UserId = userId
             };
 
