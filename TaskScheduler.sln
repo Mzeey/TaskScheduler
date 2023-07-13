@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepositoriesLib", "UserRepo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{0FD24E75-7EDC-4E27-B0D4-306C233777E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoriesLib.Tests", "RepositoriesLib.Tests\RepositoriesLib.Tests.csproj", "{1B0DA4AA-173F-4C45-9EF2-C3A437EB4526}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepositoriesLib.Tests", "RepositoriesLib.Tests\RepositoriesLib.Tests.csproj", "{1B0DA4AA-173F-4C45-9EF2-C3A437EB4526}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -76,6 +76,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{B2010B99-5363-476A-932E-89FB6651937A} = {0FD24E75-7EDC-4E27-B0D4-306C233777E4}
 		{8544E2A2-C4D0-4C8C-A056-BE8F2787B528} = {0FD24E75-7EDC-4E27-B0D4-306C233777E4}
 		{1B0DA4AA-173F-4C45-9EF2-C3A437EB4526} = {0FD24E75-7EDC-4E27-B0D4-306C233777E4}
 	EndGlobalSection
