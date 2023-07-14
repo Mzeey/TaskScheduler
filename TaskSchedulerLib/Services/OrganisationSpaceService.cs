@@ -77,9 +77,21 @@ namespace Mzeey.TaskSchedulerLib.Services
             return organisationSpace;
         }
 
-        public Task<bool> DeleteOganisationSpaceAsync(string spaceId)
+        public async Task<bool> DeleteOrganisationSpaceAsync(string spaceId)
         {
-            throw new NotImplementedException();
+            OrganisationSpace organisationSpace = await RetrieveOrganisationSpaceAsync(spaceId);
+            List<OrganisationUserSpace> organisationSpaceMembers = await RetrieveOrganisationSpaceMembersAsync(spaceId);
+
+            await DeleteOrganisationSpaceMembersAsync(organisationSpaceMembers);
+
+            bool organisationSpaceDeleted = await DeleteOrganisationSpaceAsync(organisationSpace);
+
+            if (!organisationSpaceDeleted)
+            {
+                await RestoreOrganisationSpaceMembersAsync(organisationSpaceMembers);
+            }
+
+            return organisationSpaceDeleted;
         }
 
         public Task<bool> DeleteUserFromOrganisationSpaceAsync(string spaceId, string userId)
@@ -131,5 +143,42 @@ namespace Mzeey.TaskSchedulerLib.Services
         {
             return UniqueIdGenerator.GenerateUniqueId();
         }
+
+        #region DeleteOrganisationSpaceAsync Helper Functions
+        private async Task<OrganisationSpace> RetrieveOrganisationSpaceAsync(string spaceId)
+        {
+            OrganisationSpace organisationSpace = await _organisationSpaceRepository.RetrieveAsync(spaceId);
+            if (organisationSpace is null)
+            {
+                throw new OrganisationSpaceNotFoundException(spaceId);
+            }
+
+            return organisationSpace;
+        }
+
+        private async Task<List<OrganisationUserSpace>> RetrieveOrganisationSpaceMembersAsync(string spaceId)
+        {
+            List<OrganisationUserSpace> organisationSpaceMembers = (await _organisationUserSpaceRepository.RetrieveByOrganisationSpaceIdAsync(spaceId)).ToList();
+            return organisationSpaceMembers;
+        }
+
+        private async Task DeleteOrganisationSpaceMembersAsync(List<OrganisationUserSpace> organisationSpaceMembers)
+        {
+            var deleteTasks = organisationSpaceMembers.Select(spaceMember => _organisationUserSpaceRepository.DeleteAsync(spaceMember.Id));
+            await Task.WhenAll(deleteTasks);
+        }
+
+        private async Task<bool> DeleteOrganisationSpaceAsync(OrganisationSpace organisationSpace)
+        {
+            bool organisationSpaceDeleted = await _organisationSpaceRepository.DeleteAsync(organisationSpace.Id);
+            return organisationSpaceDeleted;
+        }
+
+        private async Task RestoreOrganisationSpaceMembersAsync(List<OrganisationUserSpace> organisationSpaceMembers)
+        {
+            var restoreTasks = organisationSpaceMembers.Select(spaceMember => _organisationUserSpaceRepository.CreateAsync(spaceMember));
+            await Task.WhenAll(restoreTasks);
+        }
+        #endregion
     }
 }

@@ -12,7 +12,7 @@ namespace TaskSchedulerLib.Services
     {
         Task<OrganisationSpace> CreateOrganisationSpaceAsync(string userId, string title, string description, OrganisationSpaceType spaceType);
         Task<OrganisationSpace> UpdateOrganisationSpaceAsync(string spaceId, string title, string description);
-        Task<bool> DeleteOganisationSpaceAsync(string spaceId);
+        Task<bool> DeleteOrganisationSpaceAsync(string spaceId);
         Task<string> SendInvitationAsync(string spaceId, string inviterId, string inviteeId, UserRole role, string encryptionKey);
         Task<bool> AcceptInvitationAsync(string invitationToken, string decryptionKey);
         Task<bool> RejectInvitationAsync(string invitationToken, string decryptionKey);
