@@ -206,5 +206,10 @@ namespace Mzeey.UserManagementLib.Services
         {
             return EncryptionHelper.Decrypt(passwordResetToken, decryptionKey);
         }
+
+        private string generatePasswordResetToken()
+        {
+            return UniqueIdGenerator.GenerateUniqueId();
+        }
     }
 }
