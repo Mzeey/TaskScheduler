@@ -8,6 +8,7 @@ using NHibernate.Linq.Functions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 using TaskSchedulerLib.Services;
@@ -34,61 +35,27 @@ namespace Mzeey.TaskSchedulerLib.Services
 
         public async Task<OrganisationSpace> CreateOrganisationSpaceAsync(string userId, string title, string description, OrganisationSpaceType spaceType)
         {
-            if(userId is null)
-            {
-                throw new ArgumentException("User Id is null");
-            }
+            validateCreateOrganisationSpaceArguments(userId, title);
 
-            if(title is null)
-            {
-                throw new ArgumentException("Title is null");
-            }
+            OrganisationSpace organisationSpace = await createOrganisationSpaceEntityAsync(userId, title, description, spaceType);
 
-            OrganisationSpace organisationSpace = new OrganisationSpace
-            {
-                Id = UniqueIdGenerator.GenerateUniqueId(),
-                Title = title,
-                CreatorId = userId,
-                Description = description,
-                IsPrivate = (int)spaceType == 1 ? true : false
-            };
-
-            organisationSpace = await _organisationSpaceRepository.CreateAsync(organisationSpace);
-            if(organisationSpace is null)
-            {
-                throw new OrganisationSpaceNotCreatedException(title);
-            }
-
-            OrganisationUserSpace organisationUserSpace = new OrganisationUserSpace
-            {
-                Id = UniqueIdGenerator.GenerateUniqueId(),
-                OrganisationSpaceId = organisationSpace.Id,
-                UserId = userId,
-                RoleId = (int)UserRole.Admin
-            };
-
-            organisationUserSpace = await _organisationUserSpaceRepository.CreateAsync(organisationUserSpace);
-            if(organisationUserSpace is null)
-            {
-                await _organisationSpaceRepository.DeleteAsync(organisationSpace.Id);
-                throw new OrganisationSpaceNotCreatedException(title);
-            }
+            OrganisationUserSpace organisationUserSpace = await createOrganisationUserSpaceAsync(organisationSpace, userId);
 
             return organisationSpace;
         }
 
         public async Task<bool> DeleteOrganisationSpaceAsync(string spaceId)
         {
-            OrganisationSpace organisationSpace = await RetrieveOrganisationSpaceAsync(spaceId);
-            List<OrganisationUserSpace> organisationSpaceMembers = await RetrieveOrganisationSpaceMembersAsync(spaceId);
+            OrganisationSpace organisationSpace = await retrieveOrganisationSpaceAsync(spaceId);
+            List<OrganisationUserSpace> organisationSpaceMembers = await retrieveOrganisationSpaceMembersAsync(spaceId); 
 
-            await DeleteOrganisationSpaceMembersAsync(organisationSpaceMembers);
+            await deleteOrganisationSpaceMembersAsync(organisationSpaceMembers);
 
-            bool organisationSpaceDeleted = await DeleteOrganisationSpaceAsync(organisationSpace);
+            bool organisationSpaceDeleted = await deleteOrganisationSpaceAsync(organisationSpace);
 
             if (!organisationSpaceDeleted)
             {
-                await RestoreOrganisationSpaceMembersAsync(organisationSpaceMembers);
+                await restoreOrganisationSpaceMembersAsync(organisationSpaceMembers);
             }
 
             return organisationSpaceDeleted;
@@ -144,8 +111,70 @@ namespace Mzeey.TaskSchedulerLib.Services
             return UniqueIdGenerator.GenerateUniqueId();
         }
 
+        #region CreateOrganisationSpaceAsync Helper Functions
+        private void validateCreateOrganisationSpaceArguments(string userId, string title)
+        {
+            if (userId is null)
+            {
+                throw new ArgumentException("User Id is null");
+            }
+
+            if (title is null)
+            {
+                throw new ArgumentException("Title is null");
+            }
+        }
+
+        private async Task<OrganisationSpace> createOrganisationSpaceEntityAsync(string userId, string title, string description, OrganisationSpaceType spaceType)
+        {
+            OrganisationSpace organisationSpace = new OrganisationSpace
+            {
+                Id = UniqueIdGenerator.GenerateUniqueId(),
+                Title = title,
+                CreatorId = userId,
+                Description = description,
+                IsPrivate = (int)spaceType == 1 ? true : false
+            };
+
+            organisationSpace = await _organisationSpaceRepository.CreateAsync(organisationSpace);
+
+            if (organisationSpace is null)
+            {
+                throw new OrganisationSpaceNotCreatedException(title);
+            }
+
+            return organisationSpace;
+        }
+
+        private async Task<OrganisationUserSpace> createOrganisationUserSpaceAsync(OrganisationSpace organisationSpace, string userId)
+        {
+            OrganisationUserSpace organisationUserSpace = new OrganisationUserSpace
+            {
+                Id = UniqueIdGenerator.GenerateUniqueId(),
+                OrganisationSpaceId = organisationSpace.Id,
+                UserId = userId,
+                RoleId = (int)UserRole.Admin
+            };
+
+            organisationUserSpace = await _organisationUserSpaceRepository.CreateAsync(organisationUserSpace);
+
+            if (organisationUserSpace is null)
+            {
+                await deleteOrganisationSpaceAsync(organisationSpace);
+                throw new OrganisationSpaceNotCreatedException(organisationSpace.Title);
+            }
+
+            return organisationUserSpace;
+        }
+
+        private async Task<bool> deleteOrganisationSpaceAsync(OrganisationSpace organisationSpace)
+        {
+            return await _organisationSpaceRepository.DeleteAsync(organisationSpace.Id);
+        }
+        #endregion
+
         #region DeleteOrganisationSpaceAsync Helper Functions
-        private async Task<OrganisationSpace> RetrieveOrganisationSpaceAsync(string spaceId)
+        private async Task<OrganisationSpace> retrieveOrganisationSpaceAsync(string spaceId)
         {
             OrganisationSpace organisationSpace = await _organisationSpaceRepository.RetrieveAsync(spaceId);
             if (organisationSpace is null)
@@ -156,25 +185,19 @@ namespace Mzeey.TaskSchedulerLib.Services
             return organisationSpace;
         }
 
-        private async Task<List<OrganisationUserSpace>> RetrieveOrganisationSpaceMembersAsync(string spaceId)
+        private async Task<List<OrganisationUserSpace>> retrieveOrganisationSpaceMembersAsync(string spaceId)
         {
             List<OrganisationUserSpace> organisationSpaceMembers = (await _organisationUserSpaceRepository.RetrieveByOrganisationSpaceIdAsync(spaceId)).ToList();
             return organisationSpaceMembers;
         }
 
-        private async Task DeleteOrganisationSpaceMembersAsync(List<OrganisationUserSpace> organisationSpaceMembers)
+        private async Task deleteOrganisationSpaceMembersAsync(List<OrganisationUserSpace> organisationSpaceMembers)
         {
             var deleteTasks = organisationSpaceMembers.Select(spaceMember => _organisationUserSpaceRepository.DeleteAsync(spaceMember.Id));
             await Task.WhenAll(deleteTasks);
         }
 
-        private async Task<bool> DeleteOrganisationSpaceAsync(OrganisationSpace organisationSpace)
-        {
-            bool organisationSpaceDeleted = await _organisationSpaceRepository.DeleteAsync(organisationSpace.Id);
-            return organisationSpaceDeleted;
-        }
-
-        private async Task RestoreOrganisationSpaceMembersAsync(List<OrganisationUserSpace> organisationSpaceMembers)
+        private async Task restoreOrganisationSpaceMembersAsync(List<OrganisationUserSpace> organisationSpaceMembers)
         {
             var restoreTasks = organisationSpaceMembers.Select(spaceMember => _organisationUserSpaceRepository.CreateAsync(spaceMember));
             await Task.WhenAll(restoreTasks);
