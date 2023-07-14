@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Mzeey.UserManagementLib.Utilities
+namespace Mzeey.SharedLib.Utilities
 {
     public static class PasswordHasher
     {

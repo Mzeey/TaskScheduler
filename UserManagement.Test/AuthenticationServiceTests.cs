@@ -48,7 +48,7 @@ namespace UserManagement.Test
         {
             string userId = "non_existing_userId";
 
-            Assert.ThrowsAsync<UserNotFoundException>(async () =>
+            await Assert.ThrowsAsync<UserNotFoundException>(async () =>
             {
                 await _authenticationService.GenerateAuthenticationToken(userId, _encryptionKey);
             });
@@ -58,7 +58,7 @@ namespace UserManagement.Test
         {
             string userId = null;
 
-            Assert.ThrowsAsync<ArgumentException>(async () =>
+            await Assert.ThrowsAsync<ArgumentException>(async () =>
             {
                 await _authenticationService.GenerateAuthenticationToken(userId, _encryptionKey);
             });
@@ -75,7 +75,7 @@ namespace UserManagement.Test
 
             var authenticationService = new AuthenticationService(authenticationTokenRepositoryMock.Object, _userRepository);
 
-            Assert.ThrowsAsync<AuthenticationTokenNotCreatedException>(async () =>
+            await Assert.ThrowsAsync<AuthenticationTokenNotCreatedException>(async () =>
             {
                 await authenticationService.GenerateAuthenticationToken(userId, _encryptionKey);
             });
@@ -112,7 +112,7 @@ namespace UserManagement.Test
             string userId = "user-1";
             string invalidEncryptionKey = null;
 
-            Assert.ThrowsAsync<ArgumentException>(async () =>
+            await Assert.ThrowsAsync<ArgumentException>(async () =>
             {
                 await _authenticationService.GenerateAuthenticationToken(userId, invalidEncryptionKey);
             });
@@ -120,6 +120,7 @@ namespace UserManagement.Test
 
         #endregion
         #region DeleteAuthenticationToken Test Methods
+
         [Fact]
         public async Task DeleteAuthenticationToken_ValidToken_DeletesToken()
         {
@@ -137,9 +138,9 @@ namespace UserManagement.Test
         public async Task DeleteAuthenticationToken_InvalidToken_ThrowsInvalidAuthenticationTokenException()
         {
             
-            string authenticationToken = "invalidToken";
+            string authenticationToken = EncryptionHelper.Encrypt("invalidToken", _encryptionKey);
 
-            Assert.ThrowsAsync<InvalidAuthenticationTokenException>(async () => await _authenticationService.DeleteAuthenticationToken(authenticationToken, _encryptionKey));
+            await Assert.ThrowsAsync<InvalidAuthenticationTokenException>(async () => await _authenticationService.DeleteAuthenticationToken(authenticationToken, _encryptionKey));
         }
 
         [Fact]
@@ -148,7 +149,7 @@ namespace UserManagement.Test
             // Arrange
             string authenticationToken = null;
 
-            Assert.ThrowsAsync<InvalidAuthenticationTokenException>(async () => await _authenticationService.DeleteAuthenticationToken(authenticationToken, _encryptionKey));
+            await Assert.ThrowsAsync<ArgumentException>(async () => await _authenticationService.DeleteAuthenticationToken(authenticationToken, _encryptionKey));
         }
 
         [Fact]
@@ -157,7 +158,7 @@ namespace UserManagement.Test
             // Arrange
             string authenticationToken = "validToken";
 
-            Assert.ThrowsAsync<InvalidAuthenticationTokenException>(async () => await _authenticationService.DeleteAuthenticationToken(authenticationToken, null));
+            await Assert.ThrowsAsync<ArgumentException>(async () => await _authenticationService.DeleteAuthenticationToken(authenticationToken, null));
         }
         #endregion
 
@@ -225,7 +226,7 @@ namespace UserManagement.Test
 
             var authenticationService = new AuthenticationService(authenticationRepository.Object, _userRepository);
 
-            Assert.ThrowsAsync<UserNotFoundException>(async () =>
+            await Assert.ThrowsAsync<UserNotFoundException>(async () =>
             {
                 await authenticationService.ValidateAuthenticationToken(generatedToken, _encryptionKey);
             });

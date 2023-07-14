@@ -1,6 +1,7 @@
 ﻿using Moq;
 using Mzeey.Entities;
 using Mzeey.Repositories;
+using Mzeey.SharedLib.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,15 +78,16 @@ namespace RepositoriesLib.Tests.TestHelpers
 
             for (int i = 0; i < count; i++)
             {
+                var salt = PasswordHasher.GenerateSalt();
                 var user = new User
                 {
                     Id = $"user-{i + 1}",
                     FirstName = "User",
                     LastName = (i + 1).ToString(),
                     Username = $"user{i + 1}",
-                    Password = "password",
+                    Password = PasswordHasher.HashPassword("password", salt),
                     Email = $"user{i + 1}@example.com",
-                    Salt = "salt",
+                    Salt = salt,
                     IsEmailVerified = rand.Next(2) % 2 == 0,
                     LastLoginDate = null,
                 };

@@ -5,9 +5,9 @@ using Mzeey.Entities;
 using Mzeey.SharedLib.Enums;
 using Mzeey.SharedLib.Utilities;
 using Mzeey.Repositories;
-using Mzeey.UserManagementLib.Utilities;
 using Mzeey.SharedLib.Exceptions;
 using UserManagementLib.Services;
+using NHibernate.Mapping.ByCode.Impl;
 
 namespace Mzeey.UserManagementLib.Services
 {
@@ -89,7 +89,15 @@ namespace Mzeey.UserManagementLib.Services
 
         public async Task<bool> LogoutUserAsync(string authenticationToken, string decryptionKey)
         {
-            bool tokenDeleted = await _authenticationService.DeleteAuthenticationToken(authenticationToken, decryptionKey);
+            bool tokenDeleted;
+
+            try
+            {
+                tokenDeleted = await _authenticationService.DeleteAuthenticationToken(authenticationToken, decryptionKey);
+            }
+            catch (Exception ex) {
+                tokenDeleted = false;
+            }
 
             return tokenDeleted;
         }
@@ -98,12 +106,24 @@ namespace Mzeey.UserManagementLib.Services
         #region User_Data_Management_Functions
         public async Task<User> GetUserAsync(string userId)
         {
-            return await _userRepository.RetrieveAsync(userId);
+            User user = await _userRepository.RetrieveAsync(userId);
+            if(user is null)
+            {
+                throw new UserNotFoundException(userId);
+            }
+
+            return user;
         }
 
         public async Task<User> GetUserByUsernameAsync(string username)
         {
-            return await _userRepository.RetrieveByUserNameAsync(username);
+            User user = await _userRepository.RetrieveByUserNameAsync(username);
+            if(user is null)
+            {
+                throw new UserNotFoundException(username, $"User with the username: '{username}' does not exist");
+            }
+
+            return user;
         }
 
         public async Task<IEnumerable<User>> GetAllUsersAsync()
@@ -119,6 +139,13 @@ namespace Mzeey.UserManagementLib.Services
                 throw new UserNotFoundException(userId);
             }
 
+            List<User> users = (await _userRepository.RetrieveAllAsync()).ToList();
+            bool emailInUse = users.Any(u => u.Id.ToUpper() != userId.ToUpper() && u.Email.ToUpper() == email.ToUpper() );
+            if (emailInUse)
+            {
+                throw new ArgumentException($"Email: '{email}' is already in use");
+            }
+
             existingUser.FirstName = firstName;
             existingUser.LastName = lastName;
             existingUser.Email = email;
@@ -130,6 +157,7 @@ namespace Mzeey.UserManagementLib.Services
         {
             return await _userRepository.DeleteAsync(userId);
         }
+
         #endregion
 
 
@@ -147,7 +175,7 @@ namespace Mzeey.UserManagementLib.Services
             bool passwordMatch = PasswordHasher.VerifyPassword(oldpassword, user.Salt, user.Password);
             if (!passwordMatch)
             {
-                throw new Exception("Invalid current Password");
+                throw new ArgumentException("Invalid current Password");
             }
 
             newPassword = PasswordHasher.HashPassword(newPassword, user.Salt);
@@ -171,12 +199,12 @@ namespace Mzeey.UserManagementLib.Services
 
         private string encryptPasswordResetToken(string password, string encryptionKey)
         {
-            throw new NotImplementedException();
+            return EncryptionHelper.Encrypt(password, encryptionKey);
         }
 
         private string descryptPasswordResetToken(string passwordResetToken, string decryptionKey)
         {
-            throw new NotImplementedException();
+            return EncryptionHelper.Decrypt(passwordResetToken, decryptionKey);
         }
     }
 }
