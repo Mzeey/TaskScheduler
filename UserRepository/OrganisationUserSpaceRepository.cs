@@ -62,7 +62,7 @@ namespace Mzeey.Repositories
             });
         }
 
-        public async Task<IEnumerable<OrganisationUserSpace>> RetrieveByOrganisationSpaceIdAsync(string spaceId)
+        public async Task<IEnumerable<OrganisationUserSpace>> RetrieveAllByOrganisationSpaceIdAsync(string spaceId)
         {
             return await Task.Run(() =>
             {

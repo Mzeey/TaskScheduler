@@ -3,7 +3,9 @@ using Mzeey.Entities;
 using Mzeey.Repositories;
 using Mzeey.SharedLib.Enums;
 using Mzeey.SharedLib.Exceptions;
+using Mzeey.SharedLib.Extensions;
 using Mzeey.SharedLib.Utilities;
+using NHibernate.Id.Insert;
 using NHibernate.Linq.Functions;
 using System;
 using System.Collections.Generic;
@@ -28,9 +30,44 @@ namespace Mzeey.TaskSchedulerLib.Services
             _organisationSpaceInvitationRepository = organisationSpaceInvitationRepository;
         }
 
-        public Task<bool> AcceptInvitationAsync(string invitationToken, string decryptionKey)
+        public async Task<bool> AcceptInvitationAsync(string invitationToken, string decryptionKey)
         {
-            throw new NotImplementedException();
+            string decryptedInvitationToken = decryptInvitationToken(invitationToken, decryptionKey);
+            OrganisationSpaceInvitation organisationSpaceInvitation = await _organisationSpaceInvitationRepository.RetrieveByInvitationTokenAsync(decryptedInvitationToken);
+            if(organisationSpaceInvitation is null)
+            {
+                throw new OrganisationSpaceInvitationNotFoundException(invitationToken);
+            }
+
+            organisationSpaceInvitation.InvitationStatus = InvitationStatus.Accepted.GetDescription();
+            organisationSpaceInvitation.UpdatedDate = DateTime.UtcNow;
+
+            organisationSpaceInvitation = await _organisationSpaceInvitationRepository.UpdateAsync(organisationSpaceInvitation.Id, organisationSpaceInvitation);
+            if(organisationSpaceInvitation is null)
+            {
+                throw new Exception("Unable to accept Invitation");
+            }
+
+            OrganisationUserSpace organisationUserSpace = new OrganisationUserSpace
+            {
+                Id = UniqueIdGenerator.GenerateUniqueId(),
+                OrganisationSpaceId = organisationSpaceInvitation.OrganisationSpaceId,
+                UserId = organisationSpaceInvitation.InviteeId,
+                RoleId = organisationSpaceInvitation.RoleId,
+            };
+
+            organisationUserSpace = await _organisationUserSpaceRepository.CreateAsync(organisationUserSpace);
+            if(organisationUserSpace is null)
+            {
+                organisationSpaceInvitation.InvitationStatus = InvitationStatus.Pending.GetDescription();
+                organisationSpaceInvitation.UpdatedDate = DateTime.UtcNow;
+
+                organisationSpaceInvitation = await _organisationSpaceInvitationRepository.UpdateAsync(organisationSpaceInvitation.Id, organisationSpaceInvitation);
+
+                return false;
+            }
+
+            return true;
         }
 
         public async Task<OrganisationSpace> CreateOrganisationSpaceAsync(string userId, string title, string description, OrganisationSpaceType spaceType)
@@ -61,39 +98,116 @@ namespace Mzeey.TaskSchedulerLib.Services
             return organisationSpaceDeleted;
         }
 
-        public Task<bool> DeleteUserFromOrganisationSpaceAsync(string spaceId, string userId)
+        public async Task<bool> DeleteUserFromOrganisationSpaceAsync(string spaceId, string userId)
         {
-            throw new NotImplementedException();
+            OrganisationSpace organisationSpace = await _organisationSpaceRepository.RetrieveAsync(spaceId);
+            if(organisationSpace is null)
+            {
+                throw new OrganisationSpaceNotFoundException(spaceId);
+            }
+
+            IEnumerable<OrganisationUserSpace> organisationUserSpaces = await _organisationUserSpaceRepository.RetrieveAllByOrganisationSpaceIdAsync(organisationSpace.Id);
+            OrganisationUserSpace organisationUserSpace = organisationUserSpaces.FirstOrDefault(ous => ous.UserId.ToUpper() == userId.ToUpper());
+            if(organisationUserSpace is null)
+            {
+                throw new Exception($"User with Id '{userId}' is not a memeber of '{organisationSpace.Title}' Space");
+            }
+
+            bool organisationUserSpaceDeleted = await _organisationUserSpaceRepository.DeleteAsync(organisationUserSpace.Id);
+
+            return organisationUserSpaceDeleted;
         }
 
-        public Task<IEnumerable<OrganisationSpace>> GetOrganisationSpaces(string userId)
+        public async Task<IEnumerable<OrganisationSpace>> GetOrganisationSpaces(string userId)
         {
-            throw new NotImplementedException();
+            return await _organisationSpaceRepository.RetrieveAllByCreatorIdAsync(userId);
         }
 
-        public Task<IEnumerable<OrganisationUserSpace>> GetUsersInOrganisationSpace(string organsationSpaceId)
+        public async Task<IEnumerable<OrganisationUserSpace>> GetUsersInOrganisationSpace(string organsationSpaceId)
         {
-            throw new NotImplementedException();
+            return await _organisationUserSpaceRepository.RetrieveAllByOrganisationSpaceIdAsync(organsationSpaceId);
         }
 
-        public Task<bool> RejectInvitationAsync(string invitationToken, string decryptionKey)
+        public async Task<bool> RejectInvitationAsync(string invitationToken, string decryptionKey)
         {
-            throw new NotImplementedException();
+            string decryptedToken = decryptInvitationToken(invitationToken, decryptionKey);
+            OrganisationSpaceInvitation organisationSpaceInvitation = await _organisationSpaceInvitationRepository.RetrieveByInvitationTokenAsync(decryptedToken);
+
+            if (organisationSpaceInvitation is null)
+                throw new OrganisationSpaceInvitationNotFoundException(invitationToken);
+
+            organisationSpaceInvitation.InvitationStatus = InvitationStatus.Rejected.GetDescription();
+            organisationSpaceInvitation =  await _organisationSpaceInvitationRepository.UpdateAsync(organisationSpaceInvitation.Id, organisationSpaceInvitation);
+
+            if (organisationSpaceInvitation is null)
+                return false;
+
+            return true;
         }
 
-        public Task<string> SendInvitationAsync(string spaceId, string inviterId, string inviteeId, UserRole role, string encryptionKey)
+        public async Task<string> SendInvitationAsync(string spaceId, string inviterId, string inviteeId, UserRole role, string encryptionKey)
         {
-            throw new NotImplementedException();
+            OrganisationSpace organisationSpace = await _organisationSpaceRepository.RetrieveAsync(spaceId);
+            if(organisationSpace is null)
+            {
+                throw new OrganisationSpaceNotFoundException(spaceId);
+            }
+
+            string Invitationtoken = generateInvitationToken();
+            OrganisationSpaceInvitation organisationSpaceInvitation = new OrganisationSpaceInvitation
+            {
+                InvitationStatus = InvitationStatus.Pending.GetDescription(),
+                InviteeId = inviteeId,
+                InviterId = inviterId,
+                InvitationToken = Invitationtoken,
+                OrganisationSpaceId = organisationSpace.Id,
+                RoleId = (int) role,
+                CreatedDate = DateTime.UtcNow,
+                UpdatedDate = DateTime.UtcNow
+            };
+            organisationSpaceInvitation = await _organisationSpaceInvitationRepository.CreateAsync(organisationSpaceInvitation);
+            if(organisationSpaceInvitation is null)
+            {
+                throw new OrganisationSpaceInvitationNotSentException(organisationSpace.Title);
+            }
+            string encryptedToken = encryptInvitationToken(Invitationtoken, encryptionKey);
+
+            return encryptedToken;
         }
 
-        public Task<OrganisationSpace> UpdateOrganisationSpaceAsync(string spaceId, string title, string description)
+        public async Task<OrganisationSpace> UpdateOrganisationSpaceAsync(string spaceId, string title, string description)
         {
-            throw new NotImplementedException();
+            OrganisationSpace organisationSpace = await _organisationSpaceRepository.RetrieveAsync(spaceId);
+            if(organisationSpace is null)
+            {
+                throw new OrganisationSpaceNotFoundException(spaceId);
+            }
+
+            organisationSpace.Title = title;
+            organisationSpace.Description = description;
+
+            organisationSpace = await _organisationSpaceRepository.UpdateAsync(organisationSpace.Id, organisationSpace);
+            return organisationSpace;
         }
 
-        public Task<OrganisationUserSpace> UpdateUserRoleAsync(string spaceId, string userId, UserRole role)
+        public async Task<OrganisationUserSpace> UpdateUserRoleAsync(string spaceId, string userId, UserRole role)
         {
-            throw new NotImplementedException();
+            OrganisationSpace organisationSpace = await _organisationSpaceRepository.RetrieveAsync(spaceId);
+            if(organisationSpace is null)
+            {
+                throw new OrganisationSpaceInvitationNotFoundException(spaceId);
+            }
+
+            IEnumerable<OrganisationUserSpace> organisationUserSpaces = await _organisationUserSpaceRepository.RetrieveAllByOrganisationSpaceIdAsync(organisationSpace.Id);
+            OrganisationUserSpace organisationUserSpace = organisationUserSpaces.FirstOrDefault(ous => ous.UserId.ToUpper() == userId.ToUpper());
+            if(organisationUserSpace is null)
+            {
+                throw new Exception($"User with Id '{userId}' is not a memeber of '{organisationSpace.Title}' Space");
+            }
+            organisationUserSpace.RoleId = (int)role;
+            
+
+            return await _organisationUserSpaceRepository.UpdateAsync(organisationUserSpace);
         }
 
         private string encryptInvitationToken(string token, string encryptionKey)
@@ -187,7 +301,7 @@ namespace Mzeey.TaskSchedulerLib.Services
 
         private async Task<List<OrganisationUserSpace>> retrieveOrganisationSpaceMembersAsync(string spaceId)
         {
-            List<OrganisationUserSpace> organisationSpaceMembers = (await _organisationUserSpaceRepository.RetrieveByOrganisationSpaceIdAsync(spaceId)).ToList();
+            List<OrganisationUserSpace> organisationSpaceMembers = (await _organisationUserSpaceRepository.RetrieveAllByOrganisationSpaceIdAsync(spaceId)).ToList();
             return organisationSpaceMembers;
         }
 

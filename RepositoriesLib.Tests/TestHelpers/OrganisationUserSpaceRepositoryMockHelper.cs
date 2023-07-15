@@ -24,7 +24,7 @@ namespace RepositoriesLib.Tests.TestHelpers
             _repositoryMock.Setup(repo => repo.RetrieveByUserIdAsync(It.IsAny<string>()))
                 .ReturnsAsync((string userId) => userSpaces.Where(u => u.UserId.ToLower() == userId.ToLower()).ToList());
 
-            _repositoryMock.Setup(repo => repo.RetrieveByOrganisationSpaceIdAsync(It.IsAny<string>()))
+            _repositoryMock.Setup(repo => repo.RetrieveAllByOrganisationSpaceIdAsync(It.IsAny<string>()))
                 .ReturnsAsync((string spaceId) => userSpaces.Where(u => u.OrganisationSpaceId.ToLower() == spaceId.ToLower()).ToList());
 
             _repositoryMock.Setup(repo => repo.CreateAsync(It.IsAny<OrganisationUserSpace>()))

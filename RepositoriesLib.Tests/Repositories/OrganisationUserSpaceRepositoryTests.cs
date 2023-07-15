@@ -100,7 +100,7 @@ namespace RepositoriesLib.Tests.Repositories
             Assert.NotNull(existingUserSpace); // Ensure there's at least one user space in the repository
 
             // Act
-            var retrievedUserSpaces = await organisationUserSpaceRepository.RetrieveByOrganisationSpaceIdAsync(existingUserSpace.OrganisationSpaceId);
+            var retrievedUserSpaces = await organisationUserSpaceRepository.RetrieveAllByOrganisationSpaceIdAsync(existingUserSpace.OrganisationSpaceId);
 
             // Assert
             Assert.NotNull(retrievedUserSpaces);

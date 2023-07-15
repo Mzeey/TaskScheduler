@@ -9,7 +9,7 @@ namespace Mzeey.Repositories
         Task<IEnumerable<OrganisationUserSpace>> RetrieveAllAsync();
         Task<OrganisationUserSpace> RetrieveAsync(string id);
         Task<IEnumerable<OrganisationUserSpace>> RetrieveByUserIdAsync(string userId);
-        Task<IEnumerable<OrganisationUserSpace>> RetrieveByOrganisationSpaceIdAsync(string spaceId);
+        Task<IEnumerable<OrganisationUserSpace>> RetrieveAllByOrganisationSpaceIdAsync(string spaceId);
         Task<OrganisationUserSpace> CreateAsync(OrganisationUserSpace organisationUserSpace);
         Task<OrganisationUserSpace> UpdateAsync(OrganisationUserSpace organisationUserSpace);
         Task<bool> DeleteAsync(string id);
