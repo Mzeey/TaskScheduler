@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace RepositoriesLib.Tests.TestHelpers
 {
-    internal class OrganisationSpaceInvitationMockHelper : MockHelper<IOrganisationSpaceInvitationRepository>
+    public class OrganisationSpaceInvitationMockHelper : MockHelper<IOrganisationSpaceInvitationRepository>
     {
         public OrganisationSpaceInvitationMockHelper()
         {
@@ -87,7 +87,7 @@ namespace RepositoriesLib.Tests.TestHelpers
                     InviterId = $"inviter-{i}",
                     RoleId = i,
                     OrganisationSpaceId = $"space-{i}",
-                    UpdatedDate = DateTime.Now,
+                    UpdatedDate = DateTime.UtcNow,
                 };
 
                 invitations.Add((T)(object)invitation);

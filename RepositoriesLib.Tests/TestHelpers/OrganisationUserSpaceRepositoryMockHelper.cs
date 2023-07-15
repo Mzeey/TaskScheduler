@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit.Sdk;
 
 namespace RepositoriesLib.Tests.TestHelpers
 {
@@ -74,10 +75,9 @@ namespace RepositoriesLib.Tests.TestHelpers
                 var userSpace = new OrganisationUserSpace
                 {
                     Id = GenerateUniqueId(),
-
-                    UserId = GenerateUniqueId(),
-
-                    OrganisationSpaceId = GenerateUniqueId(),
+                    UserId = $"user-{i + 1}",
+                    OrganisationSpaceId = $"space-{i + 1}",
+                    RoleId = new Random().Next(3)
                 };
                 userSpaces.Add((T)(object) userSpace);
             }

@@ -26,7 +26,7 @@ namespace TaskSchedulerCLI.CLI
 
             Console.Write("Enter task title: ");
             string title = Console.ReadLine();
-            string userId = _userService.GetLoggedInUserId();
+            string userId = "null";// _userService.GetLoggedInUserId();
 
             Console.Write("Enter task description: ");
             string description = Console.ReadLine();
@@ -175,7 +175,7 @@ namespace TaskSchedulerCLI.CLI
         public async Task ViewMyTasks()
         {
             Console.WriteLine("\n--- My Tasks ---");
-            var tasks = await _taskService.GetTasksByUserId(_userService.GetLoggedInUserId());
+            var tasks = await _taskService.GetTasksByUserId("null");//_userService.GetLoggedInUserId());
 
             if (tasks.Any())
             {

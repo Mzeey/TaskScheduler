@@ -9,6 +9,6 @@ namespace Mzeey.SharedLib.Enums
         [Description("Manager")]
         Manager = 2,
         [Description("User")]
-        User = 3,
+        Member = 3,
     }
 }

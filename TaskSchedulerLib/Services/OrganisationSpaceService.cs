@@ -195,7 +195,7 @@ namespace Mzeey.TaskSchedulerLib.Services
             OrganisationSpace organisationSpace = await _organisationSpaceRepository.RetrieveAsync(spaceId);
             if(organisationSpace is null)
             {
-                throw new OrganisationSpaceInvitationNotFoundException(spaceId);
+                throw new OrganisationSpaceNotFoundException(spaceId);
             }
 
             IEnumerable<OrganisationUserSpace> organisationUserSpaces = await _organisationUserSpaceRepository.RetrieveAllByOrganisationSpaceIdAsync(organisationSpace.Id);
